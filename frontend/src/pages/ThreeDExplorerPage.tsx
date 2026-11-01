@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { 
   Box, 
   RotateCcw, 
@@ -89,8 +90,192 @@ const MONUMENT_MODELS: MonumentModelInfo[] = [
   }
 ];
 
+function createMonumentModel(modelId: string, isWireframe: boolean): THREE.Group {
+  const group = new THREE.Group();
+  group.position.y = -0.5;
+
+  const sandstoneColor = 0xd8c4a0;
+  const graniteColor = 0x8a929a;
+  const terracottaColor = 0xb5533b;
+
+  let mainColor = sandstoneColor;
+  if (modelId === 'hampi-pillar') mainColor = graniteColor;
+  if (modelId === 'jharokha-balcony') mainColor = terracottaColor;
+
+  const stoneMaterial = new THREE.MeshStandardMaterial({
+    color: mainColor,
+    roughness: 0.75,
+    metalness: 0.15,
+    wireframe: isWireframe,
+  });
+
+  const accentMaterial = new THREE.MeshStandardMaterial({
+    color: 0xcba135,
+    roughness: 0.45,
+    metalness: 0.4,
+    wireframe: isWireframe,
+  });
+
+  if (modelId === 'stepwell-pillar') {
+    // 1. STEPWELL PILLAR
+    const b1 = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.25, 1.4), stoneMaterial);
+    b1.position.y = -1.0;
+    b1.castShadow = true;
+    b1.receiveShadow = true;
+    group.add(b1);
+
+    const b2 = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.25, 1.1), stoneMaterial);
+    b2.position.y = -0.75;
+    b2.castShadow = true;
+    group.add(b2);
+
+    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.42, 2.2, 12), stoneMaterial);
+    shaft.position.y = 0.45;
+    shaft.castShadow = true;
+    group.add(shaft);
+
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.08, 16, 32), accentMaterial);
+    ring.position.y = 0.45;
+    ring.rotation.x = Math.PI / 2;
+    ring.castShadow = true;
+    group.add(ring);
+
+    const capBase = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.25, 1.0), stoneMaterial);
+    capBase.position.y = 1.65;
+    capBase.castShadow = true;
+    group.add(capBase);
+
+    const capBrackets = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.18, 0.6), stoneMaterial);
+    capBrackets.position.y = 1.85;
+    capBrackets.castShadow = true;
+    group.add(capBrackets);
+
+    const capCross = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.18, 1.5), stoneMaterial);
+    capCross.position.y = 1.85;
+    capCross.castShadow = true;
+    group.add(capCross);
+
+    const niche = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.6, 0.2), accentMaterial);
+    niche.position.set(0, 0.45, 0.4);
+    niche.castShadow = true;
+    group.add(niche);
+
+  } else if (modelId === 'sanchi-stupa') {
+    // 2. MONOLITHIC SANCHI STUPA DOME
+    const drum = new THREE.Mesh(new THREE.CylinderGeometry(1.8, 1.9, 0.6, 32), stoneMaterial);
+    drum.position.y = -0.7;
+    drum.castShadow = true;
+    drum.receiveShadow = true;
+    group.add(drum);
+
+    const dome = new THREE.Mesh(new THREE.SphereGeometry(1.6, 32, 24, 0, Math.PI * 2, 0, Math.PI / 2), stoneMaterial);
+    dome.position.y = -0.4;
+    dome.castShadow = true;
+    group.add(dome);
+
+    const harmika = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.4, 0.7), stoneMaterial);
+    harmika.position.y = 1.4;
+    harmika.castShadow = true;
+    group.add(harmika);
+
+    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.0, 12), accentMaterial);
+    stem.position.y = 1.9;
+    stem.castShadow = true;
+    group.add(stem);
+
+    const u1 = new THREE.Mesh(new THREE.ConeGeometry(0.55, 0.15, 24), accentMaterial);
+    u1.position.y = 1.75;
+    u1.castShadow = true;
+    group.add(u1);
+
+    const u2 = new THREE.Mesh(new THREE.ConeGeometry(0.42, 0.12, 24), accentMaterial);
+    u2.position.y = 2.0;
+    u2.castShadow = true;
+    group.add(u2);
+
+    const u3 = new THREE.Mesh(new THREE.ConeGeometry(0.3, 0.1, 24), accentMaterial);
+    u3.position.y = 2.22;
+    u3.castShadow = true;
+    group.add(u3);
+
+  } else if (modelId === 'hampi-pillar') {
+    // 3. VIJAYANAGARA MUSICAL CLUSTER PILLAR
+    const plinth = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.3, 1.3), stoneMaterial);
+    plinth.position.y = -0.9;
+    plinth.castShadow = true;
+    plinth.receiveShadow = true;
+    group.add(plinth);
+
+    const centerCol = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.45, 2.5, 12), stoneMaterial);
+    centerCol.position.y = 0.45;
+    centerCol.castShadow = true;
+    group.add(centerCol);
+
+    const colonnetteGeo = new THREE.CylinderGeometry(0.09, 0.09, 2.2, 12);
+    const offsets = [
+      [0.48, 0],
+      [-0.48, 0],
+      [0, 0.48],
+      [0, -0.48]
+    ];
+    offsets.forEach(([x, z]) => {
+      const c = new THREE.Mesh(colonnetteGeo, accentMaterial);
+      c.position.set(x, 0.45, z);
+      c.castShadow = true;
+      group.add(c);
+    });
+
+    const cap = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.3, 1.2), stoneMaterial);
+    cap.position.y = 1.8;
+    cap.castShadow = true;
+    group.add(cap);
+
+  } else {
+    // 4. JHAROKHA BALCONY (MEHRANGARH)
+    const bracket1 = new THREE.Mesh(new THREE.ConeGeometry(0.8, 1.0, 4), stoneMaterial);
+    bracket1.position.y = -0.5;
+    bracket1.rotation.y = Math.PI / 4;
+    bracket1.rotation.x = Math.PI;
+    bracket1.castShadow = true;
+    group.add(bracket1);
+
+    const bFloor = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 0.9, 0.25, 8), stoneMaterial);
+    bFloor.position.y = 0.1;
+    bFloor.castShadow = true;
+    group.add(bFloor);
+
+    const wall = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, 1.2, 8, 1, true, 0, Math.PI * 1.3), stoneMaterial);
+    wall.position.y = 0.8;
+    wall.castShadow = true;
+    group.add(wall);
+
+    const p1 = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 1.2, 8), accentMaterial);
+    p1.position.set(0.8, 0.8, 0.6);
+    p1.castShadow = true;
+    group.add(p1);
+
+    const p2 = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 1.2, 8), accentMaterial);
+    p2.position.set(-0.8, 0.8, 0.6);
+    p2.castShadow = true;
+    group.add(p2);
+
+    const roof = new THREE.Mesh(new THREE.ConeGeometry(1.4, 0.7, 8), stoneMaterial);
+    roof.position.y = 1.75;
+    roof.castShadow = true;
+    group.add(roof);
+
+    const finial = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 16), accentMaterial);
+    finial.position.y = 2.2;
+    finial.castShadow = true;
+    group.add(finial);
+  }
+
+  return group;
+}
+
 export const ThreeDExplorerPage: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const viewerWrapperRef = useRef<HTMLDivElement>(null);
   const [selectedModelId, setSelectedModelId] = useState('stepwell-pillar');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [wireframe, setWireframe] = useState(false);
@@ -99,53 +284,87 @@ export const ThreeDExplorerPage: React.FC = () => {
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const controlsRef = useRef<OrbitControls | null>(null);
   const currentMeshGroupRef = useRef<THREE.Group | null>(null);
+  const autoRotateRef = useRef(autoRotate);
 
   const selectedModel = MONUMENT_MODELS.find((m) => m.id === selectedModelId) || MONUMENT_MODELS[0];
 
-  // Initialize Three.js Scene
+  // Sync autoRotate state to ref & controls
   useEffect(() => {
-    if (!containerRef.current) return;
+    autoRotateRef.current = autoRotate;
+    if (controlsRef.current) {
+      controlsRef.current.autoRotate = autoRotate;
+    }
+  }, [autoRotate]);
 
-    const width = containerRef.current.clientWidth;
-    const height = containerRef.current.clientHeight;
+  // Initialize Three.js Scene with OrbitControls and ResizeObserver
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    const width = container.clientWidth || container.getBoundingClientRect().width || 600;
+    const height = container.clientHeight || container.getBoundingClientRect().height || 450;
 
     // Scene
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0e192d);
+    scene.background = new THREE.Color(0x0c1524); // Warm museum dark navy
     sceneRef.current = scene;
 
     // Camera
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
     camera.position.set(0, 1.8, 5.5);
+    camera.lookAt(0, 0.3, 0);
     cameraRef.current = camera;
 
     // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    containerRef.current.appendChild(renderer.domElement);
+    renderer.domElement.style.touchAction = 'none';
+    renderer.domElement.style.width = '100%';
+    renderer.domElement.style.height = '100%';
+    renderer.domElement.style.display = 'block';
+    container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
+    // Industry-Standard OrbitControls: Smooth damping, native touch gestures, wheel zoom
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.autoRotate = autoRotateRef.current;
+    controls.autoRotateSpeed = 1.3;
+    controls.target.set(0, 0.3, 0);
+    controls.minDistance = 2.0;
+    controls.maxDistance = 10.0;
+    controls.maxPolarAngle = Math.PI / 2 + 0.15; // prevent below-floor flip
+    controls.enableZoom = true;
+    controls.enablePan = true;
+    controlsRef.current = controls;
+
     // Museum Lighting
-    const ambientLight = new THREE.AmbientLight(0xffecd0, 0.9);
+    const ambientLight = new THREE.AmbientLight(0xffecd0, 1.1);
     scene.add(ambientLight);
 
-    const sunLight = new THREE.DirectionalLight(0xfff6e5, 1.6);
+    const sunLight = new THREE.DirectionalLight(0xfff6e5, 1.7);
     sunLight.position.set(5, 8, 5);
     sunLight.castShadow = true;
+    sunLight.shadow.mapSize.width = 1024;
+    sunLight.shadow.mapSize.height = 1024;
     scene.add(sunLight);
 
-    const fillLight = new THREE.DirectionalLight(0x88aacc, 0.7);
+    const fillLight = new THREE.DirectionalLight(0x88aacc, 0.9);
     fillLight.position.set(-5, 3, -3);
     scene.add(fillLight);
 
-    // Warm Ground Platform
+    // Warm Platform Pedestal
     const floorGeo = new THREE.CylinderGeometry(3.5, 3.5, 0.1, 48);
     const floorMat = new THREE.MeshStandardMaterial({
-      color: 0x182744,
+      color: 0x16243b,
       roughness: 0.8,
       metalness: 0.1,
     });
@@ -154,341 +373,99 @@ export const ThreeDExplorerPage: React.FC = () => {
     floor.receiveShadow = true;
     scene.add(floor);
 
-    // Mouse Interaction Variables
-    let isDragging = false;
-    let previousMousePosition = { x: 0, y: 0 };
+    // Initial Model Build (guaranteed on 1st frame)
+    const initialGroup = createMonumentModel(selectedModelId, wireframe);
+    scene.add(initialGroup);
+    currentMeshGroupRef.current = initialGroup;
 
-    const domElement = renderer.domElement;
-
-    const onMouseDown = (e: MouseEvent) => {
-      isDragging = true;
-      previousMousePosition = { x: e.clientX, y: e.clientY };
-    };
-
-    const onMouseMove = (e: MouseEvent) => {
-      if (!isDragging || !currentMeshGroupRef.current) return;
-      const deltaX = e.clientX - previousMousePosition.x;
-      const deltaY = e.clientY - previousMousePosition.y;
-
-      currentMeshGroupRef.current.rotation.y += deltaX * 0.008;
-      currentMeshGroupRef.current.rotation.x += deltaY * 0.005;
-
-      // Restrict pitch
-      currentMeshGroupRef.current.rotation.x = Math.max(
-        -Math.PI / 4,
-        Math.min(Math.PI / 4, currentMeshGroupRef.current.rotation.x)
-      );
-
-      previousMousePosition = { x: e.clientX, y: e.clientY };
-    };
-
-    const onMouseUp = () => {
-      isDragging = false;
-    };
-
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      if (!cameraRef.current) return;
-      cameraRef.current.position.z += e.deltaY * 0.005;
-      cameraRef.current.position.z = Math.max(2.5, Math.min(9.0, cameraRef.current.position.z));
-    };
-
-    // Native Touch Gestures for Android & iOS (Single-Finger Orbit & Two-Finger Pinch Zoom)
-    let initialPinchDistance = 0;
-    let initialCameraZ = 5.5;
-
-    const onTouchStart = (e: TouchEvent) => {
-      if (e.touches.length === 1) {
-        isDragging = true;
-        previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      } else if (e.touches.length === 2 && cameraRef.current) {
-        isDragging = false;
-        const dx = e.touches[0].clientX - e.touches[1].clientX;
-        const dy = e.touches[0].clientY - e.touches[1].clientY;
-        initialPinchDistance = Math.hypot(dx, dy);
-        initialCameraZ = cameraRef.current.position.z;
-      }
-    };
-
-    const onTouchMove = (e: TouchEvent) => {
-      if (e.touches.length === 1 && isDragging && currentMeshGroupRef.current) {
-        const deltaX = e.touches[0].clientX - previousMousePosition.x;
-        const deltaY = e.touches[0].clientY - previousMousePosition.y;
-
-        currentMeshGroupRef.current.rotation.y += deltaX * 0.01;
-        currentMeshGroupRef.current.rotation.x += deltaY * 0.007;
-
-        currentMeshGroupRef.current.rotation.x = Math.max(
-          -Math.PI / 4,
-          Math.min(Math.PI / 4, currentMeshGroupRef.current.rotation.x)
-        );
-
-        previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      } else if (e.touches.length === 2 && cameraRef.current && initialPinchDistance > 0) {
-        const dx = e.touches[0].clientX - e.touches[1].clientX;
-        const dy = e.touches[0].clientY - e.touches[1].clientY;
-        const currentDistance = Math.hypot(dx, dy);
-        if (currentDistance > 10) {
-          const scale = initialPinchDistance / currentDistance;
-          cameraRef.current.position.z = Math.max(2.5, Math.min(9.0, initialCameraZ * scale));
-        }
-      }
-    };
-
-    const onTouchEnd = () => {
-      isDragging = false;
-      initialPinchDistance = 0;
-    };
-
-    domElement.addEventListener('mousedown', onMouseDown);
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', onMouseUp);
-    domElement.addEventListener('wheel', onWheel, { passive: false });
-
-    domElement.addEventListener('touchstart', onTouchStart, { passive: true });
-    window.addEventListener('touchmove', onTouchMove, { passive: true });
-    window.addEventListener('touchend', onTouchEnd, { passive: true });
-
-    // Render Loop
+    // Animation Loop
     let animationFrameId: number;
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
-
-      if (autoRotate && currentMeshGroupRef.current && !isDragging) {
-        currentMeshGroupRef.current.rotation.y += 0.004;
-      }
-
+      controls.autoRotate = autoRotateRef.current;
+      controls.update();
       renderer.render(scene, camera);
     };
     animate();
 
-    // Window Resize Handler
-    const handleResize = () => {
-      if (!containerRef.current || !renderer || !camera) return;
-      const w = containerRef.current.clientWidth;
-      const h = containerRef.current.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
+    // ResizeObserver: Guaranteed pixel-perfect sizing on Android & Laptop
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width: w, height: h } = entry.contentRect;
+        if (w > 0 && h > 0) {
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+          renderer.setSize(w, h, false);
+        }
+      }
+    });
+    resizeObserver.observe(container);
+
+    // Fullscreen change listener
+    const onFsChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
     };
-    window.addEventListener('resize', handleResize);
+    document.addEventListener('fullscreenchange', onFsChange);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      domElement.removeEventListener('mousedown', onMouseDown);
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseup', onMouseUp);
-      domElement.removeEventListener('wheel', onWheel);
-      domElement.removeEventListener('touchstart', onTouchStart);
-      window.removeEventListener('touchmove', onTouchMove);
-      window.removeEventListener('touchend', onTouchEnd);
-      window.removeEventListener('resize', handleResize);
+      resizeObserver.disconnect();
+      document.removeEventListener('fullscreenchange', onFsChange);
+      controls.dispose();
       renderer.dispose();
-      if (containerRef.current) {
-        containerRef.current.innerHTML = '';
-      }
+      container.innerHTML = '';
+      sceneRef.current = null;
+      cameraRef.current = null;
+      rendererRef.current = null;
+      controlsRef.current = null;
+      currentMeshGroupRef.current = null;
     };
   }, []);
 
-  // Build / Switch 3D Architectural Models
+  // Update Model Geometry or Wireframe on State Change
   useEffect(() => {
     if (!sceneRef.current) return;
     const scene = sceneRef.current;
 
-    // Remove existing mesh group
+    // Dispose old model to prevent memory leaks
     if (currentMeshGroupRef.current) {
       scene.remove(currentMeshGroupRef.current);
-    }
-
-    const group = new THREE.Group();
-    group.position.y = -0.5;
-
-    // Textures / Material definitions
-    const sandstoneColor = 0xd8c4a0;
-    const graniteColor = 0x8a929a;
-    const terracottaColor = 0xb5533b;
-
-    let mainColor = sandstoneColor;
-    if (selectedModelId === 'hampi-pillar') mainColor = graniteColor;
-    if (selectedModelId === 'jharokha-balcony') mainColor = terracottaColor;
-
-    const stoneMaterial = new THREE.MeshStandardMaterial({
-      color: mainColor,
-      roughness: 0.85,
-      metalness: 0.1,
-      wireframe: wireframe,
-    });
-
-    const accentMaterial = new THREE.MeshStandardMaterial({
-      color: 0xcba135,
-      roughness: 0.5,
-      metalness: 0.3,
-      wireframe: wireframe,
-    });
-
-    if (selectedModelId === 'stepwell-pillar') {
-      // 1. STEPWELL PILLAR WITH TIERED BASE AND CARVED CAPITAL
-      // Base tiers
-      const b1 = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.25, 1.4), stoneMaterial);
-      b1.position.y = -1.0;
-      group.add(b1);
-
-      const b2 = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.25, 1.1), stoneMaterial);
-      b2.position.y = -0.75;
-      group.add(b2);
-
-      // Fluted Octagonal Shaft
-      const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.42, 2.2, 8), stoneMaterial);
-      shaft.position.y = 0.45;
-      group.add(shaft);
-
-      // Decorative Center Ring
-      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.08, 16, 32), accentMaterial);
-      ring.position.y = 0.45;
-      ring.rotation.x = Math.PI / 2;
-      group.add(ring);
-
-      // Bracket Capital
-      const capBase = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.25, 1.0), stoneMaterial);
-      capBase.position.y = 1.65;
-      group.add(capBase);
-
-      const capBrackets = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.18, 0.6), stoneMaterial);
-      capBrackets.position.y = 1.85;
-      group.add(capBrackets);
-
-      const capCross = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.18, 1.5), stoneMaterial);
-      capCross.position.y = 1.85;
-      group.add(capCross);
-
-      // Carved Niche Figure
-      const niche = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.6, 0.2), accentMaterial);
-      niche.position.set(0, 0.45, 0.4);
-      group.add(niche);
-
-    } else if (selectedModelId === 'sanchi-stupa') {
-      // 2. MONOLITHIC STUPA DOME AND HARMIKA
-      // Circular drum
-      const drum = new THREE.Mesh(new THREE.CylinderGeometry(1.8, 1.9, 0.6, 32), stoneMaterial);
-      drum.position.y = -0.7;
-      group.add(drum);
-
-      // Hemispherical Anda (Dome)
-      const dome = new THREE.Mesh(new THREE.SphereGeometry(1.6, 32, 24, 0, Math.PI * 2, 0, Math.PI / 2), stoneMaterial);
-      dome.position.y = -0.4;
-      group.add(dome);
-
-      // Harmika (Square railing)
-      const harmika = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.4, 0.7), stoneMaterial);
-      harmika.position.y = 1.4;
-      group.add(harmika);
-
-      // Chhatravali (Three-tiered umbrellas)
-      const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.0, 12), accentMaterial);
-      stem.position.y = 1.9;
-      group.add(stem);
-
-      const u1 = new THREE.Mesh(new THREE.ConeGeometry(0.55, 0.15, 24), accentMaterial);
-      u1.position.y = 1.75;
-      group.add(u1);
-
-      const u2 = new THREE.Mesh(new THREE.ConeGeometry(0.42, 0.12, 24), accentMaterial);
-      u2.position.y = 2.0;
-      group.add(u2);
-
-      const u3 = new THREE.Mesh(new THREE.ConeGeometry(0.3, 0.1, 24), accentMaterial);
-      u3.position.y = 2.22;
-      group.add(u3);
-
-    } else if (selectedModelId === 'hampi-pillar') {
-      // 3. VIJAYANAGARA MUSICAL CLUSTER PILLAR
-      // Granite plinth
-      const plinth = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.3, 1.3), stoneMaterial);
-      plinth.position.y = -0.9;
-      group.add(plinth);
-
-      // Central Column
-      const centerCol = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.45, 2.5, 12), stoneMaterial);
-      centerCol.position.y = 0.45;
-      group.add(centerCol);
-
-      // 4 Peripheral Slender Musical Colonnettes
-      const colonnetteGeo = new THREE.CylinderGeometry(0.09, 0.09, 2.2, 12);
-      const offsets = [
-        [0.48, 0],
-        [-0.48, 0],
-        [0, 0.48],
-        [0, -0.48]
-      ];
-      offsets.forEach(([x, z]) => {
-        const c = new THREE.Mesh(colonnetteGeo, accentMaterial);
-        c.position.set(x, 0.45, z);
-        group.add(c);
+      currentMeshGroupRef.current.traverse((child) => {
+        if ((child as THREE.Mesh).isMesh) {
+          const m = child as THREE.Mesh;
+          m.geometry?.dispose();
+          if (Array.isArray(m.material)) m.material.forEach((mat) => mat.dispose());
+          else m.material?.dispose();
+        }
       });
-
-      // Fluted capital with Pushpapodigai pendant
-      const cap = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.3, 1.2), stoneMaterial);
-      cap.position.y = 1.8;
-      group.add(cap);
-
-    } else {
-      // 4. JHAROKHA BALCONY (MEHRANGARH)
-      // Corbel brackets
-      const bracket1 = new THREE.Mesh(new THREE.ConeGeometry(0.8, 1.0, 4), stoneMaterial);
-      bracket1.position.y = -0.5;
-      bracket1.rotation.y = Math.PI / 4;
-      bracket1.rotation.x = Math.PI;
-      group.add(bracket1);
-
-      // Balcony floor
-      const bFloor = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 0.9, 0.25, 8), stoneMaterial);
-      bFloor.position.y = 0.1;
-      group.add(bFloor);
-
-      // Screen walls with simulated perforated apertures
-      const wall = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, 1.2, 8, 1, true, 0, Math.PI * 1.3), stoneMaterial);
-      wall.position.y = 0.8;
-      group.add(wall);
-
-      // Trefoil arch columns
-      const p1 = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 1.2, 8), accentMaterial);
-      p1.position.set(0.8, 0.8, 0.6);
-      group.add(p1);
-
-      const p2 = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 1.2, 8), accentMaterial);
-      p2.position.set(-0.8, 0.8, 0.6);
-      group.add(p2);
-
-      // Overhanging Bangaldar curved roof / Chhatri dome
-      const roof = new THREE.Mesh(new THREE.ConeGeometry(1.4, 0.7, 8), stoneMaterial);
-      roof.position.y = 1.75;
-      group.add(roof);
-
-      const finial = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 16), accentMaterial);
-      finial.position.y = 2.2;
-      group.add(finial);
+      currentMeshGroupRef.current = null;
     }
 
-    scene.add(group);
-    currentMeshGroupRef.current = group;
+    const newGroup = createMonumentModel(selectedModelId, wireframe);
+    scene.add(newGroup);
+    currentMeshGroupRef.current = newGroup;
 
+    // Reset controls target smoothly
+    if (controlsRef.current) {
+      controlsRef.current.target.set(0, 0.3, 0);
+    }
   }, [selectedModelId, wireframe]);
 
   const resetCamera = () => {
-    if (cameraRef.current && currentMeshGroupRef.current) {
+    if (cameraRef.current && controlsRef.current) {
       cameraRef.current.position.set(0, 1.8, 5.5);
-      currentMeshGroupRef.current.rotation.set(0, 0, 0);
+      controlsRef.current.target.set(0, 0.3, 0);
+      controlsRef.current.reset();
     }
   };
 
   const toggleFullscreen = () => {
-    if (!containerRef.current) return;
+    const el = viewerWrapperRef.current || containerRef.current;
+    if (!el) return;
     if (!document.fullscreenElement) {
-      containerRef.current.requestFullscreen().catch(() => null);
-      setIsFullscreen(true);
+      el.requestFullscreen().catch(() => null);
     } else {
       document.exitFullscreen().catch(() => null);
-      setIsFullscreen(false);
     }
   };
 
@@ -530,17 +507,20 @@ export const ThreeDExplorerPage: React.FC = () => {
       {/* 3D VIEWER & INFORMATION PANEL GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* 3D WebGL Canvas Container: Optimized Height & Touch Action for Mobile */}
-        <div className="lg:col-span-2 relative h-[360px] sm:h-[460px] lg:h-[540px] rounded-3xl overflow-hidden border border-heritage-border/70 shadow-heritage-lg bg-heritage-dark">
-          
+        {/* 3D WebGL Canvas Container: Optimized Height & Full Controls for Mobile & Laptop */}
+        <div 
+          ref={viewerWrapperRef}
+          className="lg:col-span-2 relative h-[380px] sm:h-[480px] lg:h-[540px] rounded-3xl overflow-hidden border border-heritage-border/70 shadow-heritage-lg bg-heritage-dark flex flex-col"
+        >
+          {/* Canvas Mount Target */}
           <div 
             ref={containerRef} 
             className="w-full h-full cursor-grab active:cursor-grabbing select-none" 
             style={{ touchAction: 'none' }}
           />
 
-          {/* Overlay Controls */}
-          <div className="absolute top-3 sm:top-4 left-3 sm:left-4 z-10 flex items-center space-x-2 bg-heritage-navy/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-heritage-border text-xs text-heritage-ivory max-w-[80%] truncate">
+          {/* Top Model Badge */}
+          <div className="absolute top-3 sm:top-4 left-3 sm:left-4 z-10 flex items-center space-x-2 bg-heritage-navy/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-heritage-border text-xs text-heritage-ivory max-w-[80%] shadow-md">
             <Box className="w-4 h-4 text-heritage-gold shrink-0" />
             <span className="font-semibold text-[11px] truncate">{selectedModel.name}</span>
           </div>
@@ -555,27 +535,29 @@ export const ThreeDExplorerPage: React.FC = () => {
                 className="p-1.5 sm:p-2 rounded-xl text-heritage-sandstone hover:text-white hover:bg-heritage-navy active:scale-95 transition text-xs flex items-center space-x-1"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline text-[11px]">Reset View</span>
+                <span className="hidden sm:inline text-[11px]">Reset</span>
               </button>
 
               <button
                 onClick={() => setAutoRotate(!autoRotate)}
                 className={`p-1.5 sm:p-2 rounded-xl text-xs font-medium transition active:scale-95 ${
-                  autoRotate ? 'bg-heritage-gold/20 text-heritage-gold' : 'text-heritage-sandstone hover:text-white'
+                  autoRotate ? 'bg-heritage-gold/20 text-heritage-gold font-bold' : 'text-heritage-sandstone hover:text-white'
                 }`}
                 title="Toggle Auto Rotation"
               >
                 <Sliders className="w-3.5 h-3.5" />
+                <span className="hidden md:inline ml-1 text-[11px]">Auto Rotate</span>
               </button>
 
               <button
                 onClick={() => setWireframe(!wireframe)}
                 className={`p-1.5 sm:p-2 rounded-xl text-xs font-medium transition active:scale-95 ${
-                  wireframe ? 'bg-heritage-terracotta/30 text-heritage-terracottaLight' : 'text-heritage-sandstone hover:text-white'
+                  wireframe ? 'bg-heritage-terracotta/30 text-heritage-terracottaLight font-bold' : 'text-heritage-sandstone hover:text-white'
                 }`}
                 title="Toggle Architectural Wireframe Mesh"
               >
                 <Layers className="w-3.5 h-3.5" />
+                <span className="hidden md:inline ml-1 text-[11px]">Wireframe</span>
               </button>
 
               <button
@@ -583,16 +565,14 @@ export const ThreeDExplorerPage: React.FC = () => {
                 className="p-1.5 sm:p-2 rounded-xl text-heritage-sandstone hover:text-white hover:bg-heritage-navy active:scale-95 transition"
                 title="Toggle Fullscreen"
               >
-                {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+                {isFullscreen ? <Minimize2 className="w-3.5 h-3.5 text-heritage-gold" /> : <Maximize2 className="w-3.5 h-3.5" />}
               </button>
             </div>
 
-            {/* Touch / Mouse Gesture Guide */}
-            <div className="flex items-center space-x-1.5 bg-heritage-dark/85 backdrop-blur-md px-2.5 sm:px-3 py-1.5 rounded-xl border border-heritage-border/60 text-[10px] text-heritage-sandstone/80">
-              <span className="hidden xs:inline">1-Finger Orbit</span>
-              <span className="xs:hidden">Touch Orbit</span>
-              <span>·</span>
-              <span>Pinch Zoom</span>
+            {/* Gesture Guide */}
+            <div className="flex items-center space-x-1.5 bg-heritage-dark/85 backdrop-blur-md px-2.5 sm:px-3 py-1.5 rounded-xl border border-heritage-border/60 text-[10px] text-heritage-sandstone/80 shadow-md">
+              <span className="hidden sm:inline">Left Click: Orbit · Wheel: Zoom</span>
+              <span className="sm:hidden">1 Finger: Orbit · Pinch: Zoom</span>
             </div>
           </div>
         </div>
@@ -671,4 +651,3 @@ export const ThreeDExplorerPage: React.FC = () => {
     </div>
   );
 };
-
