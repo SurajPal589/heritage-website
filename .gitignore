@@ -1,0 +1,33 @@
+# Node dependencies and build artifacts
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+
+# Python cache & environments
+__pycache__/
+backend/__pycache__/
+backend/app/**/__pycache__/
+backend/tests/__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+.pytest_cache/
+
+# Executables & Binaries
+cloudflared.exe
+*.exe
+
+# Environment & local variables
+.env
+backend/.env
+
+# Local agent artifacts
+skills/
+.skill-lock.json
+*.log
+
+# OS metadata
+.DS_Store
+Thumbs.db
