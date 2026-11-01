@@ -65,23 +65,23 @@ export const LandingPage: React.FC = () => {
           </div>
 
           {/* Master Heading */}
-          <div className="space-y-4">
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-heritage font-extrabold tracking-tight leading-tight text-white">
+          <div className="space-y-3 sm:space-y-4">
+            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-heritage font-extrabold tracking-tight leading-tight text-white">
               Preserving Yesterday. <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-heritage-sandstone via-heritage-gold to-heritage-terracottaLight">
                 Discovering Tomorrow.
               </span>
             </h1>
-            <p className="max-w-3xl mx-auto text-base sm:text-xl text-heritage-sandstone/90 leading-relaxed font-light">
+            <p className="max-w-3xl mx-auto text-sm sm:text-lg lg:text-xl text-heritage-sandstone/90 leading-relaxed font-light px-2">
               An intelligent digital heritage platform transforming scattered cultural archives into searchable, interactive and immersive knowledge.
             </p>
           </div>
 
           {/* Hero Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2 sm:pt-4">
             <Link
               to="/explore"
-              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2.5 px-7 py-3.5 rounded-full bg-heritage-gold hover:bg-heritage-goldLight text-heritage-dark font-bold text-sm shadow-heritage hover:shadow-heritage-lg transition-all duration-200 transform hover:-translate-y-0.5"
+              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2.5 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full bg-heritage-gold hover:bg-heritage-goldLight text-heritage-dark font-bold text-sm shadow-heritage hover:shadow-heritage-lg transition-all duration-200 transform active:scale-95"
             >
               <Compass className="w-4 h-4" />
               <span>Explore Heritage</span>
@@ -90,7 +90,7 @@ export const LandingPage: React.FC = () => {
 
             <Link
               to="/upload"
-              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2.5 px-7 py-3.5 rounded-full bg-heritage-navy/80 hover:bg-heritage-navy text-heritage-ivory border border-heritage-border/80 font-semibold text-sm backdrop-blur-md transition-all duration-200"
+              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2.5 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full bg-heritage-navy/90 hover:bg-heritage-navy text-heritage-ivory border border-heritage-border/80 font-semibold text-sm backdrop-blur-md transition-all duration-200 active:scale-95"
             >
               <UploadCloud className="w-4 h-4 text-heritage-terracottaLight" />
               <span>Digitise an Archive</span>
@@ -98,40 +98,40 @@ export const LandingPage: React.FC = () => {
           </div>
 
           {/* Live Dynamic Stats Banner */}
-          <div className="pt-12">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-5 rounded-2xl bg-heritage-surface/80 border border-heritage-border/70 backdrop-blur-md">
-              <div className="text-center p-2">
+          <div className="pt-8 sm:pt-12">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 p-4 sm:p-5 rounded-2xl bg-heritage-surface/85 border border-heritage-border/70 backdrop-blur-md">
+              <div className="text-center p-2.5 sm:p-2">
                 <div className="text-2xl sm:text-3xl font-heritage font-bold text-heritage-gold">
                   {analytics?.total_archives ?? 14}
                 </div>
-                <div className="text-xs text-heritage-sandstone/70 uppercase tracking-wider font-medium mt-1">
+                <div className="text-[10px] sm:text-xs text-heritage-sandstone/70 uppercase tracking-wider font-medium mt-1">
                   Archived Records
                 </div>
               </div>
 
-              <div className="text-center p-2 border-l border-heritage-border/50">
+              <div className="text-center p-2.5 sm:p-2 border-l border-heritage-border/50">
                 <div className="text-2xl sm:text-3xl font-heritage font-bold text-heritage-terracottaLight">
                   {analytics?.total_digitised_documents ?? 8}
                 </div>
-                <div className="text-xs text-heritage-sandstone/70 uppercase tracking-wider font-medium mt-1">
+                <div className="text-[10px] sm:text-xs text-heritage-sandstone/70 uppercase tracking-wider font-medium mt-1">
                   Digitised Manuscripts
                 </div>
               </div>
 
-              <div className="text-center p-2 border-l border-heritage-border/50">
+              <div className="text-center p-2.5 sm:p-2 border-t md:border-t-0 md:border-l border-heritage-border/50">
                 <div className="text-2xl sm:text-3xl font-heritage font-bold text-emerald-400">
                   {analytics?.total_heritage_locations ?? 12}
                 </div>
-                <div className="text-xs text-heritage-sandstone/70 uppercase tracking-wider font-medium mt-1">
+                <div className="text-[10px] sm:text-xs text-heritage-sandstone/70 uppercase tracking-wider font-medium mt-1">
                   Verified Geospatial Sites
                 </div>
               </div>
 
-              <div className="text-center p-2 border-l border-heritage-border/50">
+              <div className="text-center p-2.5 sm:p-2 border-t md:border-t-0 border-l border-heritage-border/50">
                 <div className="text-2xl sm:text-3xl font-heritage font-bold text-sky-400">
                   100%
                 </div>
-                <div className="text-xs text-heritage-sandstone/70 uppercase tracking-wider font-medium mt-1">
+                <div className="text-[10px] sm:text-xs text-heritage-sandstone/70 uppercase tracking-wider font-medium mt-1">
                   OCR & Epigraphy Indexed
                 </div>
               </div>

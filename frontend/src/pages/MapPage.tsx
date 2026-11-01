@@ -29,6 +29,7 @@ export const MapPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedState, setSelectedState] = useState<string>('');
   const [showUnlocatedDrawer, setShowUnlocatedDrawer] = useState(false);
+  const [showFiltersMobile, setShowFiltersMobile] = useState(false);
 
   // Initialize Map
   useEffect(() => {
@@ -180,80 +181,125 @@ export const MapPage: React.FC = () => {
   };
 
   return (
-    <div className="relative h-[calc(100vh-64px)] flex flex-col overflow-hidden bg-heritage-ivory">
+    <div className="relative h-[calc(100vh-56px)] sm:h-[calc(100vh-64px)] flex flex-col overflow-hidden bg-heritage-ivory">
       
       {/* Top Floating Filter Bar */}
-      <div className="absolute top-4 left-4 right-4 z-20 max-w-4xl mx-auto bg-white/95 backdrop-blur-md p-3 rounded-2xl border border-heritage-sandstone/50 shadow-heritage flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded-xl bg-heritage-navy text-heritage-gold flex items-center justify-center">
-            <Compass className="w-4 h-4" />
+      <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 z-20 max-w-4xl mx-auto bg-white/95 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl border border-heritage-sandstone/50 shadow-heritage">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center space-x-2 min-w-0">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-heritage-navy text-heritage-gold flex items-center justify-center shrink-0">
+              <Compass className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="font-heritage font-bold text-xs sm:text-sm text-heritage-dark truncate">
+                Geospatial Heritage Map
+              </h1>
+              <p className="text-[9px] sm:text-[10px] text-heritage-navy/60 truncate">
+                {geoData?.total_locations || 0} Sites · {geoData?.total_mapped_archives || 0} Verified Monuments
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="font-heritage font-bold text-xs text-heritage-dark">
-              Geospatial Heritage Map
-            </h1>
-            <p className="text-[10px] text-heritage-navy/60">
-              {geoData?.total_locations || 0} Sites · {geoData?.total_mapped_archives || 0} Verified Monuments
-            </p>
+
+          <div className="flex items-center space-x-1.5 shrink-0">
+            {/* Mobile Filter Toggle Button */}
+            <button
+              onClick={() => setShowFiltersMobile(!showFiltersMobile)}
+              className="sm:hidden px-2.5 py-1 rounded-xl bg-heritage-cream/60 border border-heritage-sandstone/60 text-heritage-navy text-xs font-semibold flex items-center space-x-1"
+            >
+              <Filter className="w-3 h-3" />
+              <span>Filters</span>
+            </button>
+
+            {/* Desktop Direct Selects */}
+            <div className="hidden sm:flex items-center space-x-2">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="bg-heritage-cream/40 border border-heritage-sandstone/60 rounded-xl px-2.5 py-1 text-xs text-heritage-dark focus:outline-none"
+              >
+                <option value="">All Categories</option>
+                {categories.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+
+              <select
+                value={selectedState}
+                onChange={(e) => setSelectedState(e.target.value)}
+                className="bg-heritage-cream/40 border border-heritage-sandstone/60 rounded-xl px-2.5 py-1 text-xs text-heritage-dark focus:outline-none"
+              >
+                <option value="">All States</option>
+                {states.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Unlocated Archives Drawer Toggle */}
+            <button
+              onClick={() => setShowUnlocatedDrawer(!showUnlocatedDrawer)}
+              className="px-2.5 sm:px-3 py-1 rounded-xl bg-heritage-navy hover:bg-heritage-surface text-heritage-gold text-[11px] sm:text-xs font-semibold flex items-center space-x-1 sm:space-x-1.5 transition shadow-xs shrink-0"
+            >
+              <AlertTriangle className="w-3 h-3 text-amber-400" />
+              <span className="hidden xs:inline">Unlocated ({geoData?.unlocated_archives.length || 0})</span>
+              <span className="xs:hidden">Notes ({geoData?.unlocated_archives.length || 0})</span>
+            </button>
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="flex items-center space-x-2">
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="bg-heritage-cream/40 border border-heritage-sandstone/60 rounded-xl px-2.5 py-1 text-xs text-heritage-dark focus:outline-none"
-          >
-            <option value="">All Categories</option>
-            {categories.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
+        {/* Mobile Expanded Filters Accordion */}
+        {showFiltersMobile && (
+          <div className="sm:hidden grid grid-cols-2 gap-2 pt-2.5 mt-2 border-t border-heritage-sandstone/30 animate-fade-in">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="bg-heritage-cream/40 border border-heritage-sandstone/60 rounded-xl px-2 py-1.5 text-xs text-heritage-dark focus:outline-none"
+            >
+              <option value="">All Categories</option>
+              {categories.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
 
-          <select
-            value={selectedState}
-            onChange={(e) => setSelectedState(e.target.value)}
-            className="bg-heritage-cream/40 border border-heritage-sandstone/60 rounded-xl px-2.5 py-1 text-xs text-heritage-dark focus:outline-none"
-          >
-            <option value="">All States</option>
-            {states.map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
-
-          {/* Unlocated Archives Drawer Toggle */}
-          <button
-            onClick={() => setShowUnlocatedDrawer(!showUnlocatedDrawer)}
-            className="px-3 py-1 rounded-xl bg-heritage-navy hover:bg-heritage-surface text-heritage-gold text-xs font-semibold flex items-center space-x-1.5 transition shadow-xs"
-          >
-            <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
-            <span>Unlocated Notes ({geoData?.unlocated_archives.length || 0})</span>
-          </button>
-        </div>
+            <select
+              value={selectedState}
+              onChange={(e) => setSelectedState(e.target.value)}
+              className="bg-heritage-cream/40 border border-heritage-sandstone/60 rounded-xl px-2 py-1.5 text-xs text-heritage-dark focus:outline-none"
+            >
+              <option value="">All States</option>
+              {states.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
       {/* Map Canvas */}
-      <div ref={mapContainerRef} className="flex-1 w-full h-full z-10" />
+      <div ref={mapContainerRef} className="flex-1 w-full h-full z-10 touch-pan-y" />
 
-      {/* Selected Monument Inspector Sidebar (Floating) */}
+      {/* Selected Monument Inspector: Responsive Bottom Sheet on Mobile / Floating Card on Desktop */}
       {selectedMarker && (
-        <div className="absolute bottom-6 left-6 z-20 w-80 sm:w-96 bg-white/95 backdrop-blur-md p-5 rounded-2xl border border-heritage-sandstone/50 shadow-heritage-lg space-y-3 animate-fade-in">
+        <div className="fixed inset-x-0 bottom-16 sm:inset-x-auto sm:bottom-6 sm:left-6 sm:w-96 z-30 bg-white/98 backdrop-blur-lg p-4 sm:p-5 rounded-t-3xl sm:rounded-2xl border-t sm:border border-heritage-sandstone/60 shadow-2xl space-y-3 animate-fade-in max-h-[70vh] flex flex-col">
+          {/* Mobile Sheet Grab Indicator */}
+          <div className="w-10 h-1 bg-heritage-sandstone/70 rounded-full mx-auto sm:hidden shrink-0" />
+
           <div className="flex items-start justify-between">
-            <div>
-              <span className="text-[10px] uppercase font-bold text-heritage-terracotta">
+            <div className="min-w-0 pr-2">
+              <span className="text-[9px] sm:text-[10px] uppercase font-bold text-heritage-terracotta tracking-wider">
                 {selectedMarker.monument_type}
               </span>
-              <h3 className="font-heritage font-bold text-base text-heritage-dark">
+              <h3 className="font-heritage font-bold text-sm sm:text-base text-heritage-dark truncate">
                 {selectedMarker.name}
               </h3>
-              <p className="text-xs text-heritage-navy/60">
+              <p className="text-[11px] text-heritage-navy/60 truncate">
                 {selectedMarker.city ? `${selectedMarker.city}, ` : ''}{selectedMarker.state} · GPS [{selectedMarker.latitude.toFixed(4)}, {selectedMarker.longitude.toFixed(4)}]
               </p>
             </div>
             <button
               onClick={() => setSelectedMarker(null)}
-              className="text-heritage-navy/50 hover:text-heritage-dark p-1 rounded-lg text-xs"
+              className="text-heritage-navy/50 hover:text-heritage-dark p-1.5 rounded-lg text-xs bg-heritage-cream/50 sm:bg-transparent shrink-0"
+              aria-label="Close Inspector"
             >
               ✕
             </button>
@@ -262,10 +308,10 @@ export const MapPage: React.FC = () => {
           <img
             src={selectedMarker.sample_thumbnail || 'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=400&q=80'}
             alt={selectedMarker.name}
-            className="w-full h-32 rounded-xl object-cover"
+            className="w-full h-28 sm:h-32 rounded-xl object-cover shrink-0"
           />
 
-          <div className="space-y-1.5 max-h-36 overflow-y-auto">
+          <div className="space-y-1.5 overflow-y-auto max-h-36 pr-1">
             <span className="text-[10px] font-bold uppercase text-heritage-navy/60">
               Connected Archival Records ({selectedMarker.archives.length}):
             </span>
@@ -273,7 +319,7 @@ export const MapPage: React.FC = () => {
               <Link
                 key={a.id}
                 to={`/archives/${a.id}`}
-                className="p-2 rounded-lg bg-heritage-cream/30 hover:bg-heritage-cream/70 flex items-center justify-between text-xs text-heritage-dark transition"
+                className="p-2 rounded-lg bg-heritage-cream/30 hover:bg-heritage-cream/70 flex items-center justify-between text-xs text-heritage-dark transition active:scale-[0.98]"
               >
                 <span className="truncate pr-2">{a.title}</span>
                 <ChevronRight className="w-3.5 h-3.5 text-heritage-terracotta shrink-0" />

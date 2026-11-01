@@ -146,33 +146,74 @@ export const ArchivesPage: React.FC = () => {
       </div>
 
       {/* FILTER & SEARCH BAR */}
-      <div className="bg-white p-5 rounded-2xl border border-heritage-sandstone/40 shadow-sm space-y-4">
-        <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row gap-3">
+      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-heritage-sandstone/40 shadow-sm space-y-3.5">
+        <form onSubmit={handleSearchSubmit} className="flex gap-2">
           <div className="relative flex-1">
             <input
               type="text"
-              placeholder="Search by monument name, extracted text, dynasty or keywords..."
+              placeholder="Search by monument, text, dynasty, or city..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-heritage-cream/40 border border-heritage-sandstone/60 rounded-xl pl-10 pr-4 py-2 text-xs focus:outline-none focus:border-heritage-gold"
+              className="w-full bg-heritage-cream/40 border border-heritage-sandstone/60 rounded-xl pl-9 pr-8 py-2 text-xs focus:outline-none focus:border-heritage-gold"
             />
             <Search className="w-4 h-4 text-heritage-navy/50 absolute left-3 top-2.5" />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-2.5 text-heritage-navy/40 hover:text-heritage-navy p-0.5"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
           <button
             type="submit"
-            className="px-5 py-2 bg-heritage-navy hover:bg-heritage-surface text-heritage-ivory rounded-xl text-xs font-semibold transition"
+            className="px-4 sm:px-5 py-2 bg-heritage-navy hover:bg-heritage-surface text-heritage-ivory rounded-xl text-xs font-semibold transition shrink-0"
           >
             Search
           </button>
         </form>
 
-        {/* Dropdown Filters */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-          {/* Category */}
+        {/* Touch-Friendly Horizontal Swipeable Category Chips (Perfect for Android & Laptop) */}
+        <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar py-1 -mx-1 px-1">
+          <button
+            type="button"
+            onClick={() => setSelectedCategory('')}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all ${
+              !selectedCategory 
+                ? 'bg-heritage-navy text-heritage-gold shadow-xs font-semibold' 
+                : 'bg-heritage-cream/50 text-heritage-navy/70 hover:bg-heritage-cream border border-heritage-sandstone/40'
+            }`}
+          >
+            All Archives
+          </button>
+          {categories.map((c) => {
+            const isSelected = selectedCategory === c;
+            return (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setSelectedCategory(isSelected ? '' : c)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all ${
+                  isSelected
+                    ? 'bg-heritage-terracotta text-white shadow-xs font-semibold'
+                    : 'bg-heritage-cream/50 text-heritage-navy/70 hover:bg-heritage-cream border border-heritage-sandstone/40'
+                }`}
+              >
+                {c.split('&')[0].trim()}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Secondary Dropdown Filters */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+          {/* Category Dropdown */}
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="bg-heritage-cream/30 border border-heritage-sandstone/60 rounded-xl px-3 py-1.5 text-xs text-heritage-dark focus:outline-none"
+            className="bg-heritage-cream/30 border border-heritage-sandstone/60 rounded-xl px-2.5 py-1.5 text-xs text-heritage-dark focus:outline-none"
           >
             <option value="">All Categories</option>
             {categories.map((c) => (
@@ -184,7 +225,7 @@ export const ArchivesPage: React.FC = () => {
           <select
             value={selectedState}
             onChange={(e) => setSelectedState(e.target.value)}
-            className="bg-heritage-cream/30 border border-heritage-sandstone/60 rounded-xl px-3 py-1.5 text-xs text-heritage-dark focus:outline-none"
+            className="bg-heritage-cream/30 border border-heritage-sandstone/60 rounded-xl px-2.5 py-1.5 text-xs text-heritage-dark focus:outline-none"
           >
             <option value="">All States</option>
             {states.map((s) => (
@@ -196,7 +237,7 @@ export const ArchivesPage: React.FC = () => {
           <select
             value={selectedLanguage}
             onChange={(e) => setSelectedLanguage(e.target.value)}
-            className="bg-heritage-cream/30 border border-heritage-sandstone/60 rounded-xl px-3 py-1.5 text-xs text-heritage-dark focus:outline-none"
+            className="bg-heritage-cream/30 border border-heritage-sandstone/60 rounded-xl px-2.5 py-1.5 text-xs text-heritage-dark focus:outline-none"
           >
             <option value="">All Languages</option>
             {languages.map((l) => (
@@ -208,7 +249,7 @@ export const ArchivesPage: React.FC = () => {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="bg-heritage-cream/30 border border-heritage-sandstone/60 rounded-xl px-3 py-1.5 text-xs text-heritage-dark focus:outline-none"
+            className="bg-heritage-cream/30 border border-heritage-sandstone/60 rounded-xl px-2.5 py-1.5 text-xs text-heritage-dark focus:outline-none"
           >
             <option value="date_desc">Newest First</option>
             <option value="date_asc">Oldest First</option>
@@ -218,8 +259,8 @@ export const ArchivesPage: React.FC = () => {
 
         {/* Active Filters Clear Button */}
         {hasActiveFilters && (
-          <div className="flex items-center space-x-2 pt-2 border-t border-heritage-sandstone/20">
-            <span className="text-[11px] text-heritage-navy/60 font-medium">Active filters applied</span>
+          <div className="flex items-center space-x-2 pt-1 border-t border-heritage-sandstone/20">
+            <span className="text-[11px] text-heritage-navy/60 font-medium">Filtered results</span>
             <button
               onClick={clearFilters}
               className="inline-flex items-center space-x-1 text-[11px] text-heritage-terracotta hover:underline font-semibold"

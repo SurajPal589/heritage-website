@@ -30,6 +30,7 @@ export const ProcessingPage: React.FC = () => {
   const [isCommitting, setIsCommitting] = useState(false);
   const [copiedText, setCopiedText] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [activeMobileTab, setActiveMobileTab] = useState<'ocr' | 'metadata'>('metadata');
 
   // Editable Form States
   const [title, setTitle] = useState('');
@@ -285,14 +286,42 @@ export const ProcessingPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Mobile Tab Switcher */}
+      <div className="lg:hidden flex bg-white p-1 rounded-2xl border border-heritage-sandstone/40 shadow-xs mb-4">
+        <button
+          type="button"
+          onClick={() => setActiveMobileTab('ocr')}
+          className={`flex-1 py-2 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition ${
+            activeMobileTab === 'ocr' 
+              ? 'bg-heritage-navy text-heritage-gold shadow-sm' 
+              : 'text-heritage-navy/70 hover:text-heritage-dark'
+          }`}
+        >
+          <FileText className="w-3.5 h-3.5" />
+          <span>1. Extracted OCR ({job?.extracted_text?.length || 0} chars)</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveMobileTab('metadata')}
+          className={`flex-1 py-2 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition ${
+            activeMobileTab === 'metadata' 
+              ? 'bg-heritage-terracotta text-white shadow-sm' 
+              : 'text-heritage-navy/70 hover:text-heritage-dark'
+          }`}
+        >
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>2. Catalog Metadata</span>
+        </button>
+      </div>
+
       {/* TWO COLUMN SPLIT VIEW */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
         
         {/* LEFT COLUMN: EXTRACTED OCR TEXT & DOCUMENT */}
-        <div className="space-y-6">
+        <div className={`space-y-6 ${activeMobileTab === 'ocr' ? 'block' : 'hidden lg:block'}`}>
           
           {/* Document Preview Card */}
-          <div className="bg-white rounded-2xl p-5 border border-heritage-sandstone/40 shadow-sm space-y-3">
+          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-heritage-sandstone/40 shadow-sm space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="font-heritage font-bold text-sm text-heritage-dark">
                 Source Document
@@ -316,7 +345,7 @@ export const ProcessingPage: React.FC = () => {
           </div>
 
           {/* Raw Extracted OCR Text Box */}
-          <div className="bg-white rounded-2xl p-5 border border-heritage-sandstone/40 shadow-sm space-y-3 flex flex-col h-[520px]">
+          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-heritage-sandstone/40 shadow-sm space-y-3 flex flex-col h-80 sm:h-[420px] lg:h-[500px]">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-heritage font-bold text-sm text-heritage-dark">
@@ -329,7 +358,7 @@ export const ProcessingPage: React.FC = () => {
               <button
                 type="button"
                 onClick={handleCopyText}
-                className="inline-flex items-center space-x-1 text-xs px-2.5 py-1 rounded-lg bg-heritage-cream/60 hover:bg-heritage-cream text-heritage-navy font-medium transition"
+                className="inline-flex items-center space-x-1 text-xs px-2.5 py-1 rounded-lg bg-heritage-cream/60 hover:bg-heritage-cream text-heritage-navy font-medium transition active:scale-95"
               >
                 <Copy className="w-3.5 h-3.5" />
                 <span>{copiedText ? 'Copied!' : 'Copy Text'}</span>
@@ -339,7 +368,7 @@ export const ProcessingPage: React.FC = () => {
             <textarea
               readOnly
               value={job?.extracted_text || 'Extracting historical text...'}
-              className="flex-1 w-full p-3.5 rounded-xl bg-heritage-ivory border border-heritage-sandstone/50 font-mono text-xs text-heritage-dark leading-relaxed resize-none focus:outline-none focus:border-heritage-gold"
+              className="flex-1 w-full p-3 sm:p-3.5 rounded-xl bg-heritage-ivory border border-heritage-sandstone/50 font-mono text-xs text-heritage-dark leading-relaxed resize-none focus:outline-none focus:border-heritage-gold"
             />
 
             <div className="text-[10px] text-heritage-navy/50 flex justify-between items-center pt-1">
@@ -351,7 +380,7 @@ export const ProcessingPage: React.FC = () => {
         </div>
 
         {/* RIGHT COLUMN: EDITABLE METADATA FORM */}
-        <div className="bg-white rounded-2xl p-6 sm:p-7 border border-heritage-sandstone/40 shadow-sm space-y-5">
+        <div className={`bg-white rounded-2xl p-5 sm:p-7 border border-heritage-sandstone/40 shadow-sm space-y-5 ${activeMobileTab === 'metadata' ? 'block' : 'hidden lg:block'}`}>
           <div className="flex items-center justify-between border-b border-heritage-sandstone/30 pb-3">
             <div>
               <h3 className="font-heritage font-bold text-base text-heritage-dark">

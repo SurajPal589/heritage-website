@@ -158,22 +158,22 @@ export const UploadPage: React.FC = () => {
             className="hidden"
           />
 
-          <div className="w-16 h-16 rounded-2xl bg-heritage-navy text-heritage-gold flex items-center justify-center shadow-md mb-4">
-            <UploadCloud className="w-8 h-8" />
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-heritage-navy text-heritage-gold flex items-center justify-center shadow-md mb-3 sm:mb-4 group-hover:scale-105 transition-transform">
+            <UploadCloud className="w-7 h-7 sm:w-8 sm:h-8" />
           </div>
 
-          <h3 className="font-heritage font-bold text-lg text-heritage-dark">
-            {selectedFile ? 'Change Selected Document' : 'Drag & Drop Archival Record'}
+          <h3 className="font-heritage font-bold text-base sm:text-lg text-heritage-dark">
+            {selectedFile ? 'Change Selected Document' : 'Tap to Select or Drag Archival File'}
           </h3>
           <p className="text-xs text-heritage-navy/70 mt-1 max-w-sm">
-            Supported formats: <strong className="text-heritage-dark">PDF, JPG, PNG, WEBP</strong> (up to 50 MB)
+            Upload from Phone Camera, Photos, or PDFs: <strong className="text-heritage-dark">PDF, JPG, PNG, WEBP</strong> (up to 50 MB)
           </p>
 
           <button
             type="button"
-            className="mt-4 px-4 py-2 rounded-xl bg-heritage-sandstone/40 hover:bg-heritage-sandstone/60 text-heritage-dark text-xs font-semibold transition"
+            className="mt-3.5 px-4 py-2 rounded-xl bg-heritage-navy text-heritage-gold hover:bg-heritage-surface text-xs font-semibold shadow-xs transition active:scale-95"
           >
-            Browse Local Files
+            {selectedFile ? 'Choose Another File' : 'Browse Files / Camera'}
           </button>
         </div>
 

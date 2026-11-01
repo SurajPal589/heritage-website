@@ -455,15 +455,15 @@ export const ThreeDExplorerPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Model Switcher Tabs */}
-        <div className="flex flex-wrap gap-2">
+        {/* Model Switcher Tabs: Horizontal Swipeable on Mobile */}
+        <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar py-1 -mx-1 px-1">
           {MONUMENT_MODELS.map((m) => (
             <button
               key={m.id}
               onClick={() => setSelectedModelId(m.id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold shrink-0 transition-all ${
                 selectedModelId === m.id
-                  ? 'bg-heritage-navy text-heritage-gold shadow-sm'
+                  ? 'bg-heritage-navy text-heritage-gold shadow-md scale-[1.02]'
                   : 'bg-white text-heritage-navy/70 hover:bg-heritage-cream/40 border border-heritage-sandstone/40'
               }`}
             >
@@ -476,25 +476,29 @@ export const ThreeDExplorerPage: React.FC = () => {
       {/* 3D VIEWER & INFORMATION PANEL GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* 3D WebGL Canvas Container */}
-        <div className="lg:col-span-2 relative h-[520px] rounded-3xl overflow-hidden border border-heritage-border/70 shadow-heritage-lg bg-heritage-dark">
+        {/* 3D WebGL Canvas Container: Optimized Height & Touch Action for Mobile */}
+        <div className="lg:col-span-2 relative h-[360px] sm:h-[460px] lg:h-[540px] rounded-3xl overflow-hidden border border-heritage-border/70 shadow-heritage-lg bg-heritage-dark">
           
-          <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+          <div 
+            ref={containerRef} 
+            className="w-full h-full cursor-grab active:cursor-grabbing select-none" 
+            style={{ touchAction: 'none' }}
+          />
 
           {/* Overlay Controls */}
-          <div className="absolute top-4 left-4 z-10 flex items-center space-x-2 bg-heritage-navy/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-heritage-border text-xs text-heritage-ivory">
-            <Box className="w-4 h-4 text-heritage-gold" />
-            <span className="font-semibold text-[11px]">{selectedModel.name}</span>
+          <div className="absolute top-3 sm:top-4 left-3 sm:left-4 z-10 flex items-center space-x-2 bg-heritage-navy/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-heritage-border text-xs text-heritage-ivory max-w-[80%] truncate">
+            <Box className="w-4 h-4 text-heritage-gold shrink-0" />
+            <span className="font-semibold text-[11px] truncate">{selectedModel.name}</span>
           </div>
 
           {/* Action Toolbar (Bottom Floating) */}
-          <div className="absolute bottom-4 left-4 right-4 z-10 flex items-center justify-between pointer-events-none">
+          <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 z-10 flex items-center justify-between pointer-events-none">
             
-            <div className="pointer-events-auto flex items-center space-x-2 bg-heritage-dark/90 backdrop-blur-md px-3 py-2 rounded-2xl border border-heritage-border/80 shadow-md">
+            <div className="pointer-events-auto flex items-center space-x-1.5 sm:space-x-2 bg-heritage-dark/95 backdrop-blur-md px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-2xl border border-heritage-border/80 shadow-lg">
               <button
                 onClick={resetCamera}
                 title="Reset Camera Orientation"
-                className="p-1.5 rounded-lg text-heritage-sandstone hover:text-white hover:bg-heritage-navy transition text-xs flex items-center space-x-1"
+                className="p-1.5 sm:p-2 rounded-xl text-heritage-sandstone hover:text-white hover:bg-heritage-navy active:scale-95 transition text-xs flex items-center space-x-1"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline text-[11px]">Reset View</span>
@@ -502,7 +506,7 @@ export const ThreeDExplorerPage: React.FC = () => {
 
               <button
                 onClick={() => setAutoRotate(!autoRotate)}
-                className={`p-1.5 rounded-lg text-xs font-medium transition ${
+                className={`p-1.5 sm:p-2 rounded-xl text-xs font-medium transition active:scale-95 ${
                   autoRotate ? 'bg-heritage-gold/20 text-heritage-gold' : 'text-heritage-sandstone hover:text-white'
                 }`}
                 title="Toggle Auto Rotation"
@@ -512,7 +516,7 @@ export const ThreeDExplorerPage: React.FC = () => {
 
               <button
                 onClick={() => setWireframe(!wireframe)}
-                className={`p-1.5 rounded-lg text-xs font-medium transition ${
+                className={`p-1.5 sm:p-2 rounded-xl text-xs font-medium transition active:scale-95 ${
                   wireframe ? 'bg-heritage-terracotta/30 text-heritage-terracottaLight' : 'text-heritage-sandstone hover:text-white'
                 }`}
                 title="Toggle Architectural Wireframe Mesh"
@@ -522,18 +526,19 @@ export const ThreeDExplorerPage: React.FC = () => {
 
               <button
                 onClick={toggleFullscreen}
-                className="p-1.5 rounded-lg text-heritage-sandstone hover:text-white hover:bg-heritage-navy transition"
+                className="p-1.5 sm:p-2 rounded-xl text-heritage-sandstone hover:text-white hover:bg-heritage-navy active:scale-95 transition"
                 title="Toggle Fullscreen"
               >
                 {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
               </button>
             </div>
 
-            {/* Mouse Gesture Guide */}
-            <div className="hidden sm:flex items-center space-x-2 bg-heritage-dark/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-heritage-border/60 text-[10px] text-heritage-sandstone/70">
-              <span>Drag to Orbit</span>
+            {/* Touch / Mouse Gesture Guide */}
+            <div className="flex items-center space-x-1.5 bg-heritage-dark/85 backdrop-blur-md px-2.5 sm:px-3 py-1.5 rounded-xl border border-heritage-border/60 text-[10px] text-heritage-sandstone/80">
+              <span className="hidden xs:inline">1-Finger Orbit</span>
+              <span className="xs:hidden">Touch Orbit</span>
               <span>·</span>
-              <span>Scroll to Zoom</span>
+              <span>Pinch Zoom</span>
             </div>
           </div>
         </div>

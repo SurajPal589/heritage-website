@@ -315,7 +315,7 @@ export const ArchiveDetailPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         {/* Full OCR Transcribed Text */}
-        <div className="bg-white rounded-3xl p-6 sm:p-7 border border-heritage-sandstone/40 shadow-sm space-y-4 flex flex-col h-[460px]">
+        <div className="bg-white rounded-3xl p-5 sm:p-7 border border-heritage-sandstone/40 shadow-sm space-y-4 flex flex-col h-72 sm:h-96 lg:h-[460px]">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <FileText className="w-4 h-4 text-heritage-terracotta" />
