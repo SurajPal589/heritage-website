@@ -17,7 +17,7 @@ import {
   Eye,
   CheckCircle2
 } from 'lucide-react';
-import { fetchAnalytics, fetchArchives, fetchStories } from '../lib/api';
+import { fetchAnalytics, fetchArchives, fetchStories, getSafeArchiveImage } from '../lib/api';
 import { AnalyticsResponse, Archive, CulturalStory } from '../types';
 
 export const LandingPage: React.FC = () => {
@@ -401,11 +401,11 @@ export const LandingPage: React.FC = () => {
               >
                 <div className="h-44 overflow-hidden relative bg-heritage-navy">
                   <img
-                    src={arc.file_path || 'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=800&q=80'}
+                    src={getSafeArchiveImage(arc.file_path, arc.category)}
                     alt={arc.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=800&q=80';
+                      (e.target as HTMLImageElement).src = getSafeArchiveImage('', arc.category);
                     }}
                   />
                   <div className="absolute top-2.5 right-2.5">

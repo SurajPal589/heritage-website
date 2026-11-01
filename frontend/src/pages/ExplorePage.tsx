@@ -13,7 +13,7 @@ import {
   SlidersHorizontal,
   Compass
 } from 'lucide-react';
-import { executeSearch } from '../lib/api';
+import { executeSearch, getSafeArchiveImage } from '../lib/api';
 import { SearchResponse, SearchResultItem } from '../types';
 
 export const ExplorePage: React.FC = () => {
@@ -251,11 +251,11 @@ export const ExplorePage: React.FC = () => {
                 >
                   {/* Thumbnail */}
                   <img
-                    src={archive.file_path || 'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=400&q=80'}
+                    src={getSafeArchiveImage(archive.file_path, archive.category)}
                     alt={archive.title}
                     className="w-full md:w-48 h-36 rounded-xl object-cover bg-heritage-navy shrink-0"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=400&q=80';
+                      (e.target as HTMLImageElement).src = getSafeArchiveImage('', archive.category);
                     }}
                   />
 

@@ -17,7 +17,7 @@ import {
   Layers,
   Sparkles
 } from 'lucide-react';
-import { fetchAnalytics } from '../lib/api';
+import { fetchAnalytics, getSafeArchiveImage } from '../lib/api';
 import { AnalyticsResponse } from '../types';
 
 export const DashboardPage: React.FC = () => {
@@ -315,11 +315,11 @@ export const DashboardPage: React.FC = () => {
             {recent_archives.map((arc) => (
               <div key={arc.id} className="pt-3 first:pt-0 flex items-start space-x-3 group">
                 <img
-                  src={arc.file_path || 'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=200&q=80'}
+                  src={getSafeArchiveImage(arc.file_path, arc.category)}
                   alt={arc.title}
                   className="w-12 h-12 rounded-lg object-cover bg-heritage-navy shrink-0"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=200&q=80';
+                    (e.target as HTMLImageElement).src = getSafeArchiveImage('', arc.category);
                   }}
                 />
                 <div className="flex-1 min-w-0">

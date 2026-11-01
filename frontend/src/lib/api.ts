@@ -18,6 +18,28 @@ export function getAssetUrl(path?: string): string {
   return RAW_API_URL ? `${RAW_API_URL.replace(/\/$/, '')}${path}` : path;
 }
 
+export function getSafeArchiveImage(filePath?: string, category?: string): string {
+  if (filePath && !filePath.toLowerCase().endsWith('.pdf')) {
+    return filePath;
+  }
+  
+  const cat = (category || '').toLowerCase();
+  if (cat.includes('stepwell') || cat.includes('water')) {
+    return 'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=1200&q=80';
+  } else if (cat.includes('temple')) {
+    return 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=1200&q=80';
+  } else if (cat.includes('fort') || cat.includes('palace')) {
+    return 'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=1200&q=80';
+  } else if (cat.includes('manuscript')) {
+    return 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1200&q=80';
+  } else if (cat.includes('craft')) {
+    return 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=1200&q=80';
+  } else if (cat.includes('buddhist') || cat.includes('jain') || cat.includes('stupa')) {
+    return 'https://images.unsplash.com/photo-1590766940554-634a7ed41450?auto=format&fit=crop&w=1200&q=80';
+  }
+  return 'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=1200&q=80';
+}
+
 export async function fetchHealth(): Promise<{ status: string; service: string; version: string; gemini_enabled: boolean }> {
   const res = await fetch(`${API_BASE}/health`);
   if (!res.ok) throw new Error('Failed to connect to backend');

@@ -193,10 +193,61 @@ export const ThreeDExplorerPage: React.FC = () => {
       cameraRef.current.position.z = Math.max(2.5, Math.min(9.0, cameraRef.current.position.z));
     };
 
+    // Native Touch Gestures for Android & iOS (Single-Finger Orbit & Two-Finger Pinch Zoom)
+    let initialPinchDistance = 0;
+    let initialCameraZ = 5.5;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      } else if (e.touches.length === 2 && cameraRef.current) {
+        isDragging = false;
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        initialPinchDistance = Math.hypot(dx, dy);
+        initialCameraZ = cameraRef.current.position.z;
+      }
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 1 && isDragging && currentMeshGroupRef.current) {
+        const deltaX = e.touches[0].clientX - previousMousePosition.x;
+        const deltaY = e.touches[0].clientY - previousMousePosition.y;
+
+        currentMeshGroupRef.current.rotation.y += deltaX * 0.01;
+        currentMeshGroupRef.current.rotation.x += deltaY * 0.007;
+
+        currentMeshGroupRef.current.rotation.x = Math.max(
+          -Math.PI / 4,
+          Math.min(Math.PI / 4, currentMeshGroupRef.current.rotation.x)
+        );
+
+        previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      } else if (e.touches.length === 2 && cameraRef.current && initialPinchDistance > 0) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const currentDistance = Math.hypot(dx, dy);
+        if (currentDistance > 10) {
+          const scale = initialPinchDistance / currentDistance;
+          cameraRef.current.position.z = Math.max(2.5, Math.min(9.0, initialCameraZ * scale));
+        }
+      }
+    };
+
+    const onTouchEnd = () => {
+      isDragging = false;
+      initialPinchDistance = 0;
+    };
+
     domElement.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
     domElement.addEventListener('wheel', onWheel, { passive: false });
+
+    domElement.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    window.addEventListener('touchend', onTouchEnd, { passive: true });
 
     // Render Loop
     let animationFrameId: number;
@@ -228,6 +279,9 @@ export const ThreeDExplorerPage: React.FC = () => {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
       domElement.removeEventListener('wheel', onWheel);
+      domElement.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
       window.removeEventListener('resize', handleResize);
       renderer.dispose();
       if (containerRef.current) {

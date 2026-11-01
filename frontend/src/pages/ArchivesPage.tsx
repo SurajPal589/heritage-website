@@ -14,7 +14,7 @@ import {
   ArrowRight,
   X
 } from 'lucide-react';
-import { fetchArchives } from '../lib/api';
+import { fetchArchives, getSafeArchiveImage } from '../lib/api';
 import { Archive } from '../types';
 
 export const ArchivesPage: React.FC = () => {
@@ -305,11 +305,11 @@ export const ArchivesPage: React.FC = () => {
             >
               <div className="h-48 overflow-hidden relative bg-heritage-navy">
                 <img
-                  src={arc.file_path || 'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=800&q=80'}
+                  src={getSafeArchiveImage(arc.file_path, arc.category)}
                   alt={arc.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=800&q=80';
+                    (e.target as HTMLImageElement).src = getSafeArchiveImage('', arc.category);
                   }}
                 />
                 <div className="absolute top-3 left-3">
@@ -362,11 +362,11 @@ export const ArchivesPage: React.FC = () => {
               className="p-4 sm:p-5 flex items-center space-x-4 hover:bg-heritage-cream/20 transition group"
             >
               <img
-                src={arc.file_path || 'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=200&q=80'}
+                src={getSafeArchiveImage(arc.file_path, arc.category)}
                 alt={arc.title}
                 className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover bg-heritage-navy shrink-0"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=200&q=80';
+                  (e.target as HTMLImageElement).src = getSafeArchiveImage('', arc.category);
                 }}
               />
               <div className="flex-1 min-w-0">

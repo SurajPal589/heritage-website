@@ -15,8 +15,8 @@ def get_analytics(db: Session = Depends(get_db)):
     jobs = db.query(ProcessingJob).order_by(desc(ProcessingJob.created_at)).limit(10).all()
 
     total_archives = len(archives)
-    total_digitised_docs = sum(1 for a in archives if a.file_type == "pdf")
-    total_processed_images = sum(1 for a in archives if a.file_type in ["jpg", "jpeg", "png", "webp"])
+    total_digitised_docs = sum(1 for a in archives if (a.file_type or '').lower() == "pdf")
+    total_processed_images = sum(1 for a in archives if (a.file_type or '').lower() in ["jpg", "jpeg", "png", "webp"])
     
     unique_locations = set()
     categories_counter = Counter()

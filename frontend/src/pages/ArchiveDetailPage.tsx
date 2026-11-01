@@ -19,7 +19,7 @@ import {
   ExternalLink,
   AlertTriangle
 } from 'lucide-react';
-import { fetchArchiveById, updateArchive, deleteArchive } from '../lib/api';
+import { fetchArchiveById, updateArchive, deleteArchive, getSafeArchiveImage } from '../lib/api';
 import { Archive } from '../types';
 
 export const ArchiveDetailPage: React.FC = () => {
@@ -220,11 +220,11 @@ export const ArchiveDetailPage: React.FC = () => {
         {/* Left: High-Res Image / Document Preview */}
         <div className="lg:col-span-5 h-72 sm:h-96 lg:h-auto relative bg-heritage-navy overflow-hidden">
           <img
-            src={archive.file_path || 'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=1200&q=80'}
+            src={getSafeArchiveImage(archive.file_path, archive.category)}
             alt={archive.title}
             className="w-full h-full object-cover"
             onError={(e) => {
-              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=1200&q=80';
+              (e.target as HTMLImageElement).src = getSafeArchiveImage('', archive.category);
             }}
           />
           <div className="absolute top-4 left-4 flex flex-col gap-1.5">
