@@ -88,6 +88,10 @@ class Archive(Base):
     architectural_features = Column(Text, nullable=True)
     cultural_significance = Column(Text, nullable=True)
     is_verified = Column(Boolean, default=True)
+    verification_status = Column(String(50), default="verified")  # verified, pending, rejected
+    country = Column(String(100), default="India")
+    source_document = Column(String(255), nullable=True)
+    source_page = Column(String(50), nullable=True)
     is_ai_generated = Column(Boolean, default=False)
     created_at = Column(DateTime, default=utc_now)
     updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)

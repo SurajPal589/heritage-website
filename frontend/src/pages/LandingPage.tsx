@@ -67,13 +67,13 @@ export const LandingPage: React.FC = () => {
           {/* Master Heading */}
           <div className="space-y-3 sm:space-y-4">
             <h1 className="text-3xl sm:text-5xl lg:text-7xl font-heritage font-extrabold tracking-tight leading-tight text-white">
-              Preserving Yesterday. <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-heritage-sandstone via-heritage-gold to-heritage-terracottaLight">
-                Discovering Tomorrow.
+              HeritageLens <span className="text-heritage-gold">AI</span> <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-heritage-sandstone via-heritage-gold to-heritage-terracottaLight text-2xl sm:text-4xl lg:text-5xl block mt-2">
+                From Historical Archives to Interactive Heritage Maps
               </span>
             </h1>
             <p className="max-w-3xl mx-auto text-sm sm:text-lg lg:text-xl text-heritage-sandstone/90 leading-relaxed font-light px-2">
-              An intelligent digital heritage platform transforming scattered cultural archives into searchable, interactive and immersive knowledge.
+              An AI-assisted digital heritage documentation platform converting historical PDFs, scanned manuscripts, photographs and research reports into structured, searchable records and interactive visualizations.
             </p>
           </div>
 

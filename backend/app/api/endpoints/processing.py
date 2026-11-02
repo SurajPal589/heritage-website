@@ -117,6 +117,10 @@ def commit_reviewed_metadata(payload: MetadataReviewRequest, db: Session = Depen
     if not job:
         raise HTTPException(status_code=404, detail="Associated processing job not found")
 
+    # Determine verification status
+    v_status = (payload.verification_status or "verified").lower()
+    is_v = True if v_status == "verified" else False
+
     # Create new permanent Archive
     archive = Archive(
         title=payload.title,
@@ -130,14 +134,18 @@ def commit_reviewed_metadata(payload: MetadataReviewRequest, db: Session = Depen
         category=payload.category,
         state=payload.state,
         city=payload.city,
+        country=payload.country or "India",
         latitude=payload.latitude,
         longitude=payload.longitude,
         keywords=payload.keywords,
         processing_status="completed",
         source_reference=payload.source_reference,
+        source_document=payload.source_document or job.file_name,
+        source_page=payload.source_page or "1",
         architectural_features=payload.architectural_features,
         cultural_significance=payload.cultural_significance,
-        is_verified=True,
+        verification_status=v_status,
+        is_verified=is_v,
         is_ai_generated=job.is_ai_generated
     )
 

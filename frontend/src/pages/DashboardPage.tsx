@@ -70,6 +70,9 @@ export const DashboardPage: React.FC = () => {
   const {
     total_archives,
     total_digitised_documents,
+    total_uploaded_documents,
+    total_verified_records,
+    total_pending_records,
     total_heritage_locations,
     total_processed_images,
     categories_distribution,
@@ -78,6 +81,10 @@ export const DashboardPage: React.FC = () => {
     recent_archives,
     recent_jobs
   } = analytics;
+
+  const effectiveUploadedDocs = total_uploaded_documents ?? (total_digitised_documents + total_processed_images);
+  const effectiveVerifiedRecords = total_verified_records ?? total_archives;
+  const effectivePendingRecords = total_pending_records ?? 0;
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-8">
@@ -120,7 +127,7 @@ export const DashboardPage: React.FC = () => {
         <div className="p-5 rounded-2xl bg-white border border-heritage-sandstone/40 shadow-sm hover:shadow-card-warm transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-heritage-navy/60">
-              Total Archives
+              Total Heritage Records
             </span>
             <div className="w-9 h-9 rounded-xl bg-heritage-navy text-heritage-gold flex items-center justify-center">
               <ArchiveIcon className="w-4 h-4" />
@@ -138,54 +145,78 @@ export const DashboardPage: React.FC = () => {
         <div className="p-5 rounded-2xl bg-white border border-heritage-sandstone/40 shadow-sm hover:shadow-card-warm transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-heritage-navy/60">
-              Digitised Documents
+              Total Uploaded Docs
             </span>
             <div className="w-9 h-9 rounded-xl bg-heritage-terracotta text-white flex items-center justify-center">
               <FileText className="w-4 h-4" />
             </div>
           </div>
           <div className="text-3xl font-heritage font-bold text-heritage-dark mt-3">
-            {total_digitised_documents}
+            {effectiveUploadedDocs}
           </div>
           <div className="text-[11px] text-heritage-navy/60 mt-1">
-            PDFs & Manuscripts extracted
+            Historical PDFs & Manuscript Scans
           </div>
         </div>
 
         <div className="p-5 rounded-2xl bg-white border border-heritage-sandstone/40 shadow-sm hover:shadow-card-warm transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-heritage-navy/60">
-              Heritage Locations
+              Verified Records
             </span>
-            <div className="w-9 h-9 rounded-xl bg-heritage-sage text-white flex items-center justify-center">
-              <MapPin className="w-4 h-4" />
+            <div className="w-9 h-9 rounded-xl bg-emerald-700 text-white flex items-center justify-center">
+              <CheckCircle className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-heritage font-bold text-heritage-dark mt-3">
-            {total_heritage_locations}
+          <div className="text-3xl font-heritage font-bold text-emerald-800 mt-3">
+            {effectiveVerifiedRecords}
           </div>
-          <div className="text-[11px] text-heritage-navy/60 mt-1">
-            Verified GPS coordinates mapped
+          <div className="text-[11px] text-emerald-700/80 mt-1">
+            Approved by human archivist
           </div>
         </div>
 
         <div className="p-5 rounded-2xl bg-white border border-heritage-sandstone/40 shadow-sm hover:shadow-card-warm transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-heritage-navy/60">
-              Processed Images
+              Pending Verification
             </span>
-            <div className="w-9 h-9 rounded-xl bg-heritage-gold text-heritage-dark flex items-center justify-center">
-              <ImageIcon className="w-4 h-4" />
+            <div className="w-9 h-9 rounded-xl bg-amber-600 text-white flex items-center justify-center">
+              <Clock className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-heritage font-bold text-heritage-dark mt-3">
-            {total_processed_images}
+          <div className="text-3xl font-heritage font-bold text-amber-800 mt-3">
+            {effectivePendingRecords}
           </div>
-          <div className="text-[11px] text-heritage-navy/60 mt-1">
-            Photographs & Scans indexed
+          <div className="text-[11px] text-amber-700/80 mt-1">
+            Awaiting archival review
           </div>
         </div>
       </div>
+
+      {/* Empty State when no records exist */}
+      {total_archives === 0 && (
+        <div className="p-8 sm:p-12 text-center bg-white rounded-3xl border border-heritage-sandstone/40 shadow-sm space-y-4">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-heritage-cream flex items-center justify-center text-heritage-terracotta">
+            <ArchiveIcon className="w-8 h-8" />
+          </div>
+          <h2 className="text-xl font-heritage font-bold text-heritage-dark">
+            No Archival Heritage Records Found
+          </h2>
+          <p className="text-sm text-heritage-navy/70 max-w-md mx-auto">
+            Your repository is currently empty. Upload historical manuscripts, photographs, or architectural field reports to initiate AI text extraction and geospatial mapping.
+          </p>
+          <div className="pt-2">
+            <Link
+              to="/upload"
+              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-heritage-terracotta hover:bg-heritage-terracottaLight text-white text-xs font-bold shadow-md transition"
+            >
+              <UploadCloud className="w-4 h-4" />
+              <span>Upload Your First Heritage Document</span>
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* DISTRIBUTION & ANALYTICS CHARTS SECTION */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

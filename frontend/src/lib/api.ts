@@ -59,6 +59,8 @@ export async function fetchArchives(params?: {
   state?: string;
   language?: string;
   period?: string;
+  verification_status?: string;
+  status?: string;
   q?: string;
   sort_by?: string;
 }): Promise<ArchiveListResponse> {
@@ -69,6 +71,8 @@ export async function fetchArchives(params?: {
   if (params?.state) query.set('state', params.state);
   if (params?.language) query.set('language', params.language);
   if (params?.period) query.set('period', params.period);
+  if (params?.verification_status) query.set('verification_status', params.verification_status);
+  if (params?.status) query.set('status', params.status);
   if (params?.q) query.set('q', params.q);
   if (params?.sort_by) query.set('sort_by', params.sort_by);
 
@@ -142,12 +146,17 @@ export async function commitReviewedMetadata(payload: {
   language?: string;
   state?: string;
   city?: string;
+  country?: string;
   latitude?: number;
   longitude?: number;
   keywords?: string;
   architectural_features?: string;
   cultural_significance?: string;
   source_reference?: string;
+  source_document?: string;
+  source_page?: string;
+  verification_status?: string;
+  is_verified?: boolean;
   tags?: string[];
 }): Promise<Archive> {
   const res = await fetch(`${API_BASE}/processing/commit`, {

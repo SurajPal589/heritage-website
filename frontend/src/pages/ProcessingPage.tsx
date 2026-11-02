@@ -40,12 +40,15 @@ export const ProcessingPage: React.FC = () => {
   const [language, setLanguage] = useState('English');
   const [state, setState] = useState('');
   const [city, setCity] = useState('');
+  const [country, setCountry] = useState('India');
   const [latitude, setLatitude] = useState<string>('');
   const [longitude, setLongitude] = useState<string>('');
   const [keywords, setKeywords] = useState('');
   const [architecturalFeatures, setArchitecturalFeatures] = useState('');
   const [culturalSignificance, setCulturalSignificance] = useState('');
   const [sourceReference, setSourceReference] = useState('');
+  const [sourceDocument, setSourceDocument] = useState('');
+  const [sourcePage, setSourcePage] = useState('1');
 
   const categories = [
     'Stepwells & Water Architecture',
@@ -64,19 +67,22 @@ export const ProcessingPage: React.FC = () => {
 
       if (data.extracted_metadata) {
         const m = data.extracted_metadata;
-        setTitle(m.title || data.file_name);
+        setTitle(m.heritage_name || m.title || data.file_name);
         setDescription(m.description || '');
         setHistoricalPeriod(m.historical_period || '');
-        setCategory(m.category || 'Historical Architecture');
+        setCategory(m.heritage_category || m.category || 'Historical Architecture');
         setLanguage(m.language || 'English');
         setState(m.state || '');
-        setCity(m.city || '');
+        setCity(m.location || m.city || '');
+        setCountry(m.country || 'India');
         setLatitude(m.latitude !== null && m.latitude !== undefined ? m.latitude.toString() : '');
         setLongitude(m.longitude !== null && m.longitude !== undefined ? m.longitude.toString() : '');
-        setKeywords(m.keywords || '');
+        setKeywords(Array.isArray(m.keywords) ? m.keywords.join(', ') : (m.keywords || ''));
         setArchitecturalFeatures(m.architectural_features || '');
         setCulturalSignificance(m.cultural_significance || '');
         setSourceReference(m.source_reference || `Heritage Archive Upload #${data.job_uuid.slice(0, 6)}`);
+        setSourceDocument(m.source_document || data.file_name);
+        setSourcePage(m.source_page || '1');
       }
       setLoading(false);
 
@@ -96,19 +102,22 @@ export const ProcessingPage: React.FC = () => {
       setJob(updated);
       if (updated.extracted_metadata) {
         const m = updated.extracted_metadata;
-        setTitle(m.title || updated.file_name);
+        setTitle(m.heritage_name || m.title || updated.file_name);
         setDescription(m.description || '');
         setHistoricalPeriod(m.historical_period || '');
-        setCategory(m.category || 'Historical Architecture');
+        setCategory(m.heritage_category || m.category || 'Historical Architecture');
         setLanguage(m.language || 'English');
         setState(m.state || '');
-        setCity(m.city || '');
+        setCity(m.location || m.city || '');
+        setCountry(m.country || 'India');
         setLatitude(m.latitude !== null && m.latitude !== undefined ? m.latitude.toString() : '');
         setLongitude(m.longitude !== null && m.longitude !== undefined ? m.longitude.toString() : '');
-        setKeywords(m.keywords || '');
+        setKeywords(Array.isArray(m.keywords) ? m.keywords.join(', ') : (m.keywords || ''));
         setArchitecturalFeatures(m.architectural_features || '');
         setCulturalSignificance(m.cultural_significance || '');
         setSourceReference(m.source_reference || `Heritage Archive Upload #${updated.job_uuid.slice(0, 6)}`);
+        setSourceDocument(m.source_document || updated.file_name);
+        setSourcePage(m.source_page || '1');
       }
     } catch (err: any) {
       // Re-fetch to get failure state from backend
@@ -134,7 +143,7 @@ export const ProcessingPage: React.FC = () => {
     }
   };
 
-  const handleSaveToDatabase = async () => {
+  const handleSaveToDatabase = async (statusDecision: 'verified' | 'pending' | 'rejected' = 'verified') => {
     if (!job) return;
     setIsCommitting(true);
     setSaveError(null);
@@ -154,12 +163,17 @@ export const ProcessingPage: React.FC = () => {
         language: language || 'English',
         state: state || undefined,
         city: city || undefined,
+        country: country || 'India',
         latitude: latitude ? parseFloat(latitude) : undefined,
         longitude: longitude ? parseFloat(longitude) : undefined,
         keywords: keywords || undefined,
         architectural_features: architecturalFeatures || undefined,
         cultural_significance: culturalSignificance || undefined,
         source_reference: sourceReference || undefined,
+        source_document: sourceDocument || job.file_name,
+        source_page: sourcePage || '1',
+        verification_status: statusDecision,
+        is_verified: statusDecision === 'verified',
         tags: tagList
       });
 
@@ -551,23 +565,91 @@ export const ProcessingPage: React.FC = () => {
               />
             </div>
 
-            {/* Action Buttons */}
-            <div className="pt-4 border-t border-heritage-sandstone/30 flex items-center justify-end space-x-3">
-              <Link
-                to="/upload"
-                className="px-4 py-2.5 rounded-xl border border-heritage-sandstone/60 text-heritage-navy text-xs font-semibold hover:bg-heritage-cream/30 transition"
-              >
-                Discard & Upload Another
-              </Link>
+            {/* Country, Source Document & Source Page */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-[11px] font-bold text-heritage-dark mb-1">
+                  Country
+                </label>
+                <input
+                  type="text"
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  placeholder="India"
+                  className="w-full bg-heritage-cream/30 border border-heritage-sandstone/60 rounded-xl px-3 py-1.5 text-xs focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-heritage-dark mb-1">
+                  Source Document
+                </label>
+                <input
+                  type="text"
+                  value={sourceDocument}
+                  onChange={(e) => setSourceDocument(e.target.value)}
+                  placeholder="filename.pdf"
+                  className="w-full bg-heritage-cream/30 border border-heritage-sandstone/60 rounded-xl px-3 py-1.5 text-xs focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-heritage-dark mb-1">
+                  Source Page #
+                </label>
+                <input
+                  type="text"
+                  value={sourcePage}
+                  onChange={(e) => setSourcePage(e.target.value)}
+                  placeholder="1"
+                  className="w-full bg-heritage-cream/30 border border-heritage-sandstone/60 rounded-xl px-3 py-1.5 text-xs focus:outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Uncertainty Warning Banner */}
+            {(!latitude || !longitude || historicalPeriod.toLowerCase().includes('pending')) && (
+              <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start space-x-2">
+                <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold">Human Verification Required: </span>
+                  Certain fields (e.g. coordinates or exact historical period) are AI suggestions or unconfirmed. Refine above or choose an appropriate verification status.
+                </div>
+              </div>
+            )}
+
+            {/* Action Buttons: 3 Verification Options */}
+            <div className="pt-5 border-t border-heritage-sandstone/30 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
               <button
                 type="button"
                 disabled={isCommitting}
-                onClick={handleSaveToDatabase}
-                className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-heritage-terracotta hover:bg-heritage-terracottaLight text-white font-bold text-xs shadow-md transition disabled:opacity-50"
+                onClick={() => handleSaveToDatabase('rejected')}
+                className="px-4 py-2.5 rounded-xl border border-rose-300 text-rose-700 hover:bg-rose-50 text-xs font-semibold transition disabled:opacity-50 text-center"
               >
-                <Save className="w-4 h-4" />
-                <span>{isCommitting ? 'Persisting to Repository...' : 'Save to Digital Archive'}</span>
+                Reject Suggestion
               </button>
+
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <button
+                  type="button"
+                  disabled={isCommitting}
+                  onClick={() => handleSaveToDatabase('pending')}
+                  className="inline-flex items-center justify-center space-x-1.5 px-4 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-semibold text-xs border border-amber-300 transition disabled:opacity-50"
+                >
+                  <Clock className="w-4 h-4" />
+                  <span>Save as Pending Review</span>
+                </button>
+
+                <button
+                  type="button"
+                  disabled={isCommitting}
+                  onClick={() => handleSaveToDatabase('verified')}
+                  className="inline-flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-md transition disabled:opacity-50"
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  <span>{isCommitting ? 'Persisting...' : 'Approve & Mark Verified'}</span>
+                </button>
+              </div>
             </div>
 
           </div>

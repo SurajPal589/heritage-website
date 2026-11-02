@@ -63,14 +63,18 @@ class ArchiveBase(BaseModel):
     category: Optional[str] = None
     state: Optional[str] = None
     city: Optional[str] = None
+    country: Optional[str] = "India"
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     keywords: Optional[str] = None
     processing_status: Optional[str] = "completed"
     source_reference: Optional[str] = None
+    source_document: Optional[str] = None
+    source_page: Optional[str] = None
     architectural_features: Optional[str] = None
     cultural_significance: Optional[str] = None
     is_verified: Optional[bool] = True
+    verification_status: Optional[str] = "verified"  # verified, pending, rejected
     is_ai_generated: Optional[bool] = False
 
 class ArchiveCreate(ArchiveBase):
@@ -84,12 +88,17 @@ class ArchiveUpdate(BaseModel):
     category: Optional[str] = None
     state: Optional[str] = None
     city: Optional[str] = None
+    country: Optional[str] = None
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     keywords: Optional[str] = None
     architectural_features: Optional[str] = None
     cultural_significance: Optional[str] = None
     source_reference: Optional[str] = None
+    source_document: Optional[str] = None
+    source_page: Optional[str] = None
+    verification_status: Optional[str] = None
+    is_verified: Optional[bool] = None
     tag_names: Optional[List[str]] = None
 
 class ArchiveResponse(ArchiveBase):
@@ -138,12 +147,17 @@ class MetadataReviewRequest(BaseModel):
     language: Optional[str] = "English"
     state: Optional[str] = None
     city: Optional[str] = None
+    country: Optional[str] = "India"
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     keywords: Optional[str] = None
     architectural_features: Optional[str] = None
     cultural_significance: Optional[str] = None
     source_reference: Optional[str] = None
+    source_document: Optional[str] = None
+    source_page: Optional[str] = None
+    verification_status: Optional[str] = "verified"
+    is_verified: Optional[bool] = True
     tags: Optional[List[str]] = []
 
 # Search Schemas
@@ -215,6 +229,10 @@ class CulturalStoryResponse(BaseModel):
 class AnalyticsResponse(BaseModel):
     total_archives: int
     total_digitised_documents: int
+    total_uploaded_documents: int = 0
+    total_verified_records: int = 0
+    total_pending_records: int = 0
+    total_rejected_records: int = 0
     total_heritage_locations: int
     total_processed_images: int
     categories_distribution: Dict[str, int]

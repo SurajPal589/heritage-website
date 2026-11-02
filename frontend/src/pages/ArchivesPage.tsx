@@ -29,6 +29,7 @@ export const ArchivesPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
   const [selectedState, setSelectedState] = useState(searchParams.get('state') || '');
   const [selectedLanguage, setSelectedLanguage] = useState(searchParams.get('language') || '');
+  const [selectedStatus, setSelectedStatus] = useState(searchParams.get('status') || '');
   const [sortBy, setSortBy] = useState('date_desc');
 
   const categories = [
@@ -66,6 +67,7 @@ export const ArchivesPage: React.FC = () => {
       category: selectedCategory || undefined,
       state: selectedState || undefined,
       language: selectedLanguage || undefined,
+      verification_status: selectedStatus || undefined,
       sort_by: sortBy,
       limit: 50
     })
@@ -83,7 +85,7 @@ export const ArchivesPage: React.FC = () => {
 
   useEffect(() => {
     loadData();
-  }, [selectedCategory, selectedState, selectedLanguage, sortBy]);
+  }, [selectedCategory, selectedState, selectedLanguage, selectedStatus, sortBy]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,11 +97,12 @@ export const ArchivesPage: React.FC = () => {
     setSelectedCategory('');
     setSelectedState('');
     setSelectedLanguage('');
+    setSelectedStatus('');
     setSortBy('date_desc');
     setSearchParams({});
   };
 
-  const hasActiveFilters = Boolean(searchQuery || selectedCategory || selectedState || selectedLanguage);
+  const hasActiveFilters = Boolean(searchQuery || selectedCategory || selectedState || selectedLanguage || selectedStatus);
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
@@ -208,7 +211,7 @@ export const ArchivesPage: React.FC = () => {
         </div>
 
         {/* Secondary Dropdown Filters */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-1">
           {/* Category Dropdown */}
           <select
             value={selectedCategory}
@@ -243,6 +246,18 @@ export const ArchivesPage: React.FC = () => {
             {languages.map((l) => (
               <option key={l} value={l}>{l}</option>
             ))}
+          </select>
+
+          {/* Verification Status */}
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="bg-heritage-cream/30 border border-heritage-sandstone/60 rounded-xl px-2.5 py-1.5 text-xs text-heritage-dark focus:outline-none font-medium"
+          >
+            <option value="">All Statuses</option>
+            <option value="verified">Verified Records</option>
+            <option value="pending">Pending Review</option>
+            <option value="rejected">Rejected</option>
           </select>
 
           {/* Sort */}
@@ -312,10 +327,25 @@ export const ArchivesPage: React.FC = () => {
                     (e.target as HTMLImageElement).src = getSafeArchiveImage('', arc.category);
                   }}
                 />
-                <div className="absolute top-3 left-3">
+                <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
                   <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-heritage-dark/85 text-heritage-gold backdrop-blur-xs">
                     {arc.category?.split('&')[0].trim()}
                   </span>
+                  {arc.verification_status === 'pending' && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-600/90 text-amber-50 backdrop-blur-xs">
+                      Pending Review
+                    </span>
+                  )}
+                  {arc.verification_status === 'rejected' && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-600/90 text-rose-50 backdrop-blur-xs">
+                      Rejected
+                    </span>
+                  )}
+                  {(arc.verification_status === 'verified' || (!arc.verification_status && arc.is_verified)) && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-700/90 text-emerald-50 backdrop-blur-xs">
+                      Verified
+                    </span>
+                  )}
                 </div>
                 {arc.latitude && arc.longitude && (
                   <div className="absolute top-3 right-3">
@@ -370,10 +400,25 @@ export const ArchivesPage: React.FC = () => {
                 }}
               />
               <div className="flex-1 min-w-0">
-                <div className="flex items-center space-x-2 text-[10px] text-heritage-terracotta font-medium">
+                <div className="flex items-center space-x-2 text-[10px] text-heritage-terracotta font-medium flex-wrap gap-1">
                   <span>{arc.category}</span>
                   <span>·</span>
                   <span>{arc.state || 'Field Note'}</span>
+                  {arc.verification_status === 'pending' && (
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                      Pending Review
+                    </span>
+                  )}
+                  {arc.verification_status === 'rejected' && (
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-rose-100 text-rose-800 border border-rose-300">
+                      Rejected
+                    </span>
+                  )}
+                  {(arc.verification_status === 'verified' || (!arc.verification_status && arc.is_verified)) && (
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                      Verified
+                    </span>
+                  )}
                 </div>
                 <h3 className="font-heritage font-bold text-sm sm:text-base text-heritage-dark group-hover:text-heritage-gold transition-colors truncate">
                   {arc.title}

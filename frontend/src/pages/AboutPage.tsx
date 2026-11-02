@@ -23,10 +23,10 @@ export const AboutPage: React.FC = () => {
           System Architecture & Academic Provenance
         </span>
         <h1 className="text-3xl sm:text-4xl font-heritage font-bold text-heritage-dark mt-1">
-          About HeritageVerse AI
+          About HeritageLens AI
         </h1>
         <p className="text-sm text-heritage-navy/70 mt-1 leading-relaxed">
-          Developed for Hackathon Problem Statement <strong>HC26-CULT01</strong> at <strong>Blithchron '27, IIT Gandhinagar</strong>.
+          From Historical Archives to Interactive Heritage Maps. Developed for Hackathon Problem Statement <strong>HC26-CULT01</strong> at <strong>Blithchron '27, IIT Gandhinagar</strong>.
         </p>
       </div>
 
@@ -41,7 +41,7 @@ export const AboutPage: React.FC = () => {
         <p className="text-xs sm:text-sm text-heritage-navy/80 leading-relaxed text-justify">
           Cultural documentation collected by students, researchers, and explorers is scattered across disconnected PDF reports, historical photographs, handwritten documents, regional language manuscripts, travel journals, and unindexed cloud folders. 
           <br /><br />
-          HeritageVerse AI solves this by engineering a functional end-to-end pipeline that transforms raw unstructured files into structured, searchable, interactive, and visually immersive digital knowledge.
+          HeritageLens AI solves this by engineering a functional end-to-end pipeline that converts historical PDFs, scanned documents, photographs and research reports into structured, searchable heritage records and interactive geographical visualizations.
         </p>
       </div>
 

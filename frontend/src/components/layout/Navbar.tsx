@@ -58,7 +58,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
               </div>
               <div className="flex flex-col min-w-0">
                 <span className="font-heritage text-sm sm:text-base md:text-lg font-bold tracking-wide text-heritage-ivory group-hover:text-heritage-goldLight transition-colors truncate">
-                  HeritageVerse <span className="text-heritage-gold">AI</span>
+                  HeritageLens <span className="text-heritage-gold">AI</span>
                 </span>
                 <span className="text-[9px] sm:text-[10px] uppercase tracking-wider text-heritage-sandstone/70 truncate hidden xs:block">
                   IIT Gandhinagar · HC26-CULT01

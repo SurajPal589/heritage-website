@@ -7,8 +7,8 @@ UPLOAD_DIR = BASE_DIR / "uploads"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 class Settings:
-    PROJECT_NAME: str = "HeritageVerse AI"
-    PROJECT_DESCRIPTION: str = "AI-Powered Digital Revitalisation of Unstructured Cultural & Architectural Heritage Archives"
+    PROJECT_NAME: str = "HeritageLens AI"
+    PROJECT_DESCRIPTION: str = "From Historical Archives to Interactive Heritage Maps"
     VERSION: str = "1.0.0"
     API_V1_STR: str = "/api"
     

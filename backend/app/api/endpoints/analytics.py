@@ -18,6 +18,13 @@ def get_analytics(db: Session = Depends(get_db)):
     total_digitised_docs = sum(1 for a in archives if (a.file_type or '').lower() == "pdf")
     total_processed_images = sum(1 for a in archives if (a.file_type or '').lower() in ["jpg", "jpeg", "png", "webp"])
     
+    total_jobs_count = db.query(ProcessingJob).count()
+    total_uploaded_documents = max(total_jobs_count, total_digitised_docs + total_processed_images)
+
+    total_verified_records = sum(1 for a in archives if (getattr(a, 'verification_status', None) == 'verified' or (getattr(a, 'verification_status', None) is None and a.is_verified)))
+    total_pending_records = sum(1 for a in archives if getattr(a, 'verification_status', None) == 'pending')
+    total_rejected_records = sum(1 for a in archives if getattr(a, 'verification_status', None) == 'rejected')
+    
     unique_locations = set()
     categories_counter = Counter()
     languages_counter = Counter()
@@ -72,6 +79,10 @@ def get_analytics(db: Session = Depends(get_db)):
     return AnalyticsResponse(
         total_archives=total_archives,
         total_digitised_documents=total_digitised_docs,
+        total_uploaded_documents=total_uploaded_documents,
+        total_verified_records=total_verified_records,
+        total_pending_records=total_pending_records,
+        total_rejected_records=total_rejected_records,
         total_heritage_locations=len(unique_locations),
         total_processed_images=total_processed_images,
         categories_distribution=dict(categories_counter),

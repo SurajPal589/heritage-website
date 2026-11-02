@@ -9,7 +9,7 @@ def test_health_check():
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "healthy"
-    assert "HeritageVerse AI" in data["service"]
+    assert "HeritageLens AI" in data["service"]
 
 def test_list_archives():
     response = client.get("/api/archives/")
@@ -106,4 +106,22 @@ def test_upload_and_ocr_flow():
     created_archive = commit_res.json()
     assert created_archive["title"] == "Adalaj Water Survey 1498 CE"
     assert created_archive["id"] > 0
+
+def test_verification_and_analytics_breakdown():
+    # Verify analytics contains the breakdown fields
+    res = client.get("/api/analytics/")
+    assert res.status_code == 200
+    data = res.json()
+    assert "total_verified_records" in data
+    assert "total_pending_records" in data
+    assert "total_uploaded_documents" in data
+
+    # Verify archives filter by verification_status
+    v_res = client.get("/api/archives/?verification_status=verified")
+    assert v_res.status_code == 200
+    v_data = v_res.json()
+    assert v_data["total"] >= 1
+    for item in v_data["items"]:
+        assert item.get("verification_status") in [None, "verified"]
+
 

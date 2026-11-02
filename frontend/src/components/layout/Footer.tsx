@@ -12,10 +12,10 @@ export const Footer: React.FC = () => {
           <div className="space-y-3 md:col-span-1">
             <div className="flex items-center space-x-2 text-heritage-ivory">
               <Compass className="w-5 h-5 text-heritage-gold" />
-              <span className="font-heritage text-base font-bold">HeritageVerse AI</span>
+              <span className="font-heritage text-base font-bold">HeritageLens AI</span>
             </div>
             <p className="text-xs text-heritage-sandstone/70 leading-relaxed">
-              Transforming unstructured cultural and architectural heritage archives into structured, searchable, interactive, and visually immersive digital knowledge.
+              From Historical Archives to Interactive Heritage Maps. Converting historical PDFs, scanned documents, photographs and research reports into structured, searchable heritage records and interactive geographical visualizations.
             </p>
             <div className="flex items-center space-x-1.5 text-[11px] text-heritage-gold">
               <ShieldCheck className="w-3.5 h-3.5" />
@@ -96,7 +96,7 @@ export const Footer: React.FC = () => {
 
         <div className="mt-8 pt-6 border-t border-heritage-border/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-heritage-sandstone/60">
           <div>
-            &copy; {new Date().getFullYear()} HeritageVerse AI. Built for the preservation of Indian cultural heritage.
+            &copy; {new Date().getFullYear()} HeritageLens AI. Built for the preservation of Indian cultural heritage.
           </div>
           <div className="flex items-center space-x-4">
             <Link to="/about" className="hover:text-heritage-sandstone">Documentation</Link>

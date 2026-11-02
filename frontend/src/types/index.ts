@@ -53,14 +53,18 @@ export interface Archive {
   category?: string;
   state?: string;
   city?: string;
+  country?: string;
   latitude?: number;
   longitude?: number;
   keywords?: string;
   processing_status?: string;
   source_reference?: string;
+  source_document?: string;
+  source_page?: string;
   architectural_features?: string;
   cultural_significance?: string;
   is_verified?: boolean;
+  verification_status?: 'verified' | 'pending' | 'rejected';
   is_ai_generated?: boolean;
   created_at: string;
   updated_at?: string;
@@ -93,6 +97,13 @@ export interface ProcessingJob {
   ai_engine: string;
   extracted_text?: string;
   extracted_metadata?: {
+    heritage_name?: string;
+    heritage_category?: string;
+    location?: string;
+    country?: string;
+    source_document?: string;
+    source_page?: string;
+    verification_status?: string;
     title?: string;
     description?: string;
     historical_period?: string;
@@ -102,7 +113,7 @@ export interface ProcessingJob {
     city?: string;
     latitude?: number;
     longitude?: number;
-    keywords?: string;
+    keywords?: string | string[];
     architectural_features?: string;
     cultural_significance?: string;
     source_reference?: string;
@@ -188,6 +199,10 @@ export interface CulturalStory {
 export interface AnalyticsResponse {
   total_archives: number;
   total_digitised_documents: number;
+  total_uploaded_documents?: number;
+  total_verified_records?: number;
+  total_pending_records?: number;
+  total_rejected_records?: number;
   total_heritage_locations: number;
   total_processed_images: number;
   categories_distribution: Record<string, number>;

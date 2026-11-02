@@ -231,6 +231,22 @@ export const ArchiveDetailPage: React.FC = () => {
             <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-heritage-dark/85 text-heritage-gold backdrop-blur-xs">
               {archive.category}
             </span>
+            {archive.verification_status === 'pending' && (
+              <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-600/90 text-amber-50 backdrop-blur-xs">
+                Pending Verification
+              </span>
+            )}
+            {archive.verification_status === 'rejected' && (
+              <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-600/90 text-rose-50 backdrop-blur-xs">
+                Rejected Record
+              </span>
+            )}
+            {(archive.verification_status === 'verified' || (!archive.verification_status && archive.is_verified)) && (
+              <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-800/90 text-emerald-200 backdrop-blur-xs flex items-center space-x-1">
+                <ShieldCheck className="w-3 h-3" />
+                <span>Verified Asset</span>
+              </span>
+            )}
             {archive.latitude && archive.longitude && (
               <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-900/80 text-emerald-300 backdrop-blur-xs flex items-center space-x-1">
                 <MapPin className="w-3 h-3" />

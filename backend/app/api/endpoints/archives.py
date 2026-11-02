@@ -18,12 +18,19 @@ def list_archives(
     state: Optional[str] = None,
     language: Optional[str] = None,
     period: Optional[str] = None,
+    verification_status: Optional[str] = None,
+    status: Optional[str] = None,
     q: Optional[str] = None,
     sort_by: Optional[str] = "date_desc",
     db: Session = Depends(get_db)
 ):
     """Retrieve paginated archival records with optional filtering."""
     query = db.query(Archive)
+
+    # Verification status filter
+    effective_status = verification_status or status
+    if effective_status and effective_status.lower() != "all":
+        query = query.filter(Archive.verification_status == effective_status.lower())
 
     if category:
         query = query.filter(Archive.category == category)

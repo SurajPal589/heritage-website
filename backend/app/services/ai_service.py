@@ -1,7 +1,7 @@
 import json
 import re
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from app.core.config import settings
 
 # Verified monument coordinates database
@@ -35,16 +35,81 @@ class AIService:
                 if ai_meta:
                     ai_meta["is_ai_generated"] = True
                     ai_meta["engine"] = "Gemini AI"
-                    return ai_meta
+                    return cls._normalize_metadata(ai_meta, filename, language)
             except Exception as e:
-                # Log and smoothly fallback to deterministic pipeline
                 print(f"[AIService] Gemini API error, falling back to deterministic extractor: {e}")
 
-        # Deterministic Heritage NLP Engine
+        # Deterministic Heritage NLP Engine Fallback
         deterministic_meta = cls._extract_deterministic(extracted_text, filename, language)
         deterministic_meta["is_ai_generated"] = False
         deterministic_meta["engine"] = "Deterministic Heritage NLP Engine (Fallback)"
-        return deterministic_meta
+        return cls._normalize_metadata(deterministic_meta, filename, language)
+
+    @classmethod
+    def _normalize_metadata(cls, meta: Dict[str, Any], filename: str, language: str) -> Dict[str, Any]:
+        """Standardize metadata to conform with both master schema and HeritageLens database."""
+        h_name = meta.get("heritage_name") or meta.get("title") or Path(filename).stem.replace("_", " ").title()
+        cat = meta.get("heritage_category") or meta.get("category") or "Historical Architecture"
+        loc = meta.get("location") or meta.get("city") or None
+        st = meta.get("state") or None
+        cntry = meta.get("country") or "India"
+        period = meta.get("historical_period") or None
+        desc = meta.get("description") or f"Historical archival record documenting {h_name}."
+        
+        # Keywords handling
+        raw_keywords = meta.get("keywords")
+        if isinstance(raw_keywords, list):
+            keywords_list = raw_keywords
+            keywords_str = ", ".join(str(k) for k in raw_keywords)
+        elif isinstance(raw_keywords, str):
+            keywords_str = raw_keywords
+            keywords_list = [k.strip() for k in raw_keywords.split(",") if k.strip()]
+        else:
+            keywords_list = ["Heritage", "Archival Record"]
+            keywords_str = "Heritage, Archival Record"
+
+        # Coordinates safety check: never invent coordinates
+        lat = meta.get("latitude")
+        lng = meta.get("longitude")
+        if lat is not None and lng is not None:
+            try:
+                lat = float(lat)
+                lng = float(lng)
+                if not (8.0 <= lat <= 37.0 and 68.0 <= lng <= 97.5):
+                    # Coordinates outside India boundary
+                    lat, lng = None, None
+            except (ValueError, TypeError):
+                lat, lng = None, None
+
+        norm = {
+            # Master Prompt Exact Schema Fields
+            "heritage_name": h_name,
+            "heritage_category": cat,
+            "location": loc or (st or "Unspecified Location"),
+            "state": st,
+            "country": cntry,
+            "historical_period": period or "Undated Historical Period (Pending Verification)",
+            "description": desc,
+            "keywords": keywords_list,
+            "source_document": meta.get("source_document") or filename,
+            "source_page": str(meta.get("source_page") or "1"),
+            "latitude": lat,
+            "longitude": lng,
+            "verification_status": "pending",  # AI output must never automatically become verified
+
+            # Backwards compatibility fields for database and frontend components
+            "title": h_name,
+            "category": cat,
+            "city": loc,
+            "language": language,
+            "architectural_features": meta.get("architectural_features") or "Stylistic carvings, masonry structural joints, and regional motifs cataloged.",
+            "cultural_significance": meta.get("cultural_significance") or "Represents regional community identity, historic engineering, and cultural traditions.",
+            "source_reference": meta.get("source_reference") or f"HeritageLens Archival Reference – Doc: {filename}",
+            "tags": keywords_list,
+            "is_ai_generated": meta.get("is_ai_generated", False),
+            "engine": meta.get("engine", "HeritageLens AI")
+        }
+        return norm
 
     @classmethod
     def _extract_with_gemini(cls, text: str, filename: str, language: str) -> Optional[Dict[str, Any]]:
@@ -55,30 +120,34 @@ class AIService:
 
             client = genai.Client(api_key=settings.GEMINI_API_KEY)
             prompt = f"""
-            You are a specialist cultural heritage and architectural historian archiving Indian cultural records.
+            You are a specialist cultural heritage and architectural historian archiving Indian cultural records for HeritageLens AI.
             Analyze the following extracted archival document text and file name to produce structured historical metadata.
+
+            Rules:
+            1. Return ONLY a valid JSON object.
+            2. Never invent dates or geographical coordinates. If unknown or uncertain, return null.
+            3. Do not mark verification_status as verified; always set "verification_status": "pending".
 
             File Name: {filename}
             Detected Script/Language: {language}
             Document Text:
             {text[:4000]}
 
-            Return ONLY a valid JSON object with the following fields:
+            Return ONLY this JSON format:
             {{
-                "title": "A concise, academic archival title for this record",
+                "heritage_name": "Concise historical title for this heritage asset",
+                "heritage_category": "One of: Stepwells & Water Architecture, Temple Architecture, Forts & Palaces, Ancient Manuscripts, Traditional Crafts, Buddhist & Jain Heritage, Sculptural Epigraphy",
+                "location": "City or site location in India, or null if unknown",
+                "state": "State in India or null",
+                "country": "India",
+                "historical_period": "Historical Era or Dynasty or null if unknown",
                 "description": "2-3 sentences synthesizing the historical importance and contents",
-                "historical_period": "E.g., 11th Century CE (Solanki Dynasty)",
-                "category": "One of: Stepwells & Water Architecture, Temple Architecture, Forts & Palaces, Ancient Manuscripts, Traditional Crafts, Buddhist & Jain Heritage, Sculptural Epigraphy",
-                "language": "{language}",
-                "state": "State in India (or null if unknown)",
-                "city": "City/District in India (or null if unknown)",
-                "latitude": numeric float or null,
-                "longitude": numeric float or null,
-                "keywords": "comma, separated, tags, architectural, terms",
-                "architectural_features": "Noteworthy architectural, stylistic or decorative features",
-                "cultural_significance": "Cultural, religious or social importance",
-                "source_reference": "Suggested archival citation or collection name",
-                "tags": ["tag1", "tag2", "tag3"]
+                "keywords": ["keyword1", "keyword2", "keyword3"],
+                "source_document": "{filename}",
+                "source_page": "1",
+                "latitude": null,
+                "longitude": null,
+                "verification_status": "pending"
             }}
             """
             
@@ -104,6 +173,7 @@ class AIService:
         
         # 1. Check for known monuments in verified database
         matched_monument = None
+        matched_name = None
         for key, info in VERIFIED_MONUMENT_COORDINATES.items():
             if key in content:
                 matched_monument = info
@@ -125,7 +195,7 @@ class AIService:
         elif any(w in content for w in ["stupa", "buddhist", "jain", "chaitya", "vihara", "tirthankara"]):
             category = "Buddhist & Jain Heritage"
 
-        # 3. Determine Location
+        # 3. Determine Location & Coordinates (only if verified)
         state = None
         city = None
         lat = None
@@ -138,24 +208,23 @@ class AIService:
             lng = matched_monument["lng"]
         else:
             state_map = {
-                "gujarat": ("Gujarat", 22.2587, 71.1924),
-                "rajasthan": ("Rajasthan", 27.0238, 74.2179),
-                "karnataka": ("Karnataka", 15.3173, 75.7139),
-                "tamil nadu": ("Tamil Nadu", 11.1271, 78.6569),
-                "odisha": ("Odisha", 20.9517, 85.0985),
-                "maharashtra": ("Maharashtra", 19.7515, 75.7139),
-                "bihar": ("Bihar", 25.0961, 85.3131),
-                "madhya pradesh": ("Madhya Pradesh", 22.9734, 78.6569),
-                "uttar pradesh": ("Uttar Pradesh", 26.8467, 80.9462),
+                "gujarat": "Gujarat",
+                "rajasthan": "Rajasthan",
+                "karnataka": "Karnataka",
+                "tamil nadu": "Tamil Nadu",
+                "odisha": "Odisha",
+                "maharashtra": "Maharashtra",
+                "bihar": "Bihar",
+                "madhya pradesh": "Madhya Pradesh",
+                "uttar pradesh": "Uttar Pradesh",
             }
-            for s_name, s_data in state_map.items():
-                if s_name in content:
-                    state = s_data[0]
-                    # Note: Only set general coordinates if verified
+            for s_key, s_val in state_map.items():
+                if s_key in content:
+                    state = s_val
                     break
 
         # 4. Determine Historical Period
-        historical_period = "Medieval Era (circa 10th–16th Century CE)"
+        historical_period = None
         if matched_monument:
             historical_period = matched_monument["period"]
         elif "solanki" in content or "chaulukya" in content:
@@ -172,6 +241,8 @@ class AIService:
             historical_period = "3rd Century BCE (Mauryan Empire)"
         elif "maratha" in content:
             historical_period = "17th–18th Century CE (Maratha Confederacy)"
+        else:
+            historical_period = "Historical Era (Pending Verification)"
 
         # 5. Build Title and Summary
         clean_name = re.sub(r'[\-_.]+', ' ', Path(filename).stem).title()
@@ -188,7 +259,7 @@ class AIService:
                 f"Preserves structural observations, epigraphic notes and visual heritage attributes."
             )
 
-        # 6. Extract Keywords and Tags
+        # 6. Extract Keywords
         keywords_list = ["Indian Heritage", category.split("&")[0].strip()]
         if state:
             keywords_list.append(state)
@@ -199,16 +270,22 @@ class AIService:
         keywords_list.extend(["Archival Preservation", "Architectural Heritage"])
 
         return {
+            "heritage_name": title,
             "title": title,
-            "description": desc,
-            "historical_period": historical_period,
+            "heritage_category": category,
             "category": category,
-            "language": language,
-            "state": state,
+            "location": city or state or "Unspecified Location",
             "city": city,
+            "state": state,
+            "country": "India",
+            "historical_period": historical_period,
+            "description": desc,
+            "keywords": keywords_list,
+            "source_document": filename,
+            "source_page": "1",
             "latitude": lat,
             "longitude": lng,
-            "keywords": ", ".join(keywords_list),
+            "verification_status": "pending",
             "architectural_features": (
                 "Carved stone embellishments, traditional load-bearing masonry, "
                 "sculptural reliefs, and period-specific motifs cataloged during field survey."
@@ -217,6 +294,6 @@ class AIService:
                 "Exemplifies regional architectural ingenuity, community heritage preservation, "
                 "and historical craftsmanship."
             ),
-            "source_reference": f"HeritageVerse Digital Archive Field Survey – Record #{abs(hash(filename)) % 10000:04d}",
+            "source_reference": f"HeritageLens Archival Survey – Record #{abs(hash(filename)) % 10000:04d}",
             "tags": keywords_list
         }
