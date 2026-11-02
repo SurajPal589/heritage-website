@@ -6,6 +6,7 @@ from app.schemas.schemas import GeospatialResponse, LocationMarker, ArchiveRespo
 
 router = APIRouter()
 
+@router.get("", response_model=GeospatialResponse)
 @router.get("/", response_model=GeospatialResponse)
 def get_heritage_locations(db: Session = Depends(get_db)):
     """Retrieve verified geographic markers and unlocated archive records for the map module."""

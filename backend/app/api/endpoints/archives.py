@@ -10,6 +10,7 @@ from app.schemas.schemas import (
 
 router = APIRouter()
 
+@router.get("", response_model=ArchiveListResponse)
 @router.get("/", response_model=ArchiveListResponse)
 def list_archives(
     skip: int = Query(0, ge=0),

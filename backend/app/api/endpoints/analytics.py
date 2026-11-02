@@ -8,6 +8,7 @@ from app.schemas.schemas import AnalyticsResponse, ArchiveResponse, ProcessingJo
 
 router = APIRouter()
 
+@router.get("", response_model=AnalyticsResponse)
 @router.get("/", response_model=AnalyticsResponse)
 def get_analytics(db: Session = Depends(get_db)):
     """Dynamically compute live platform statistics directly from the database."""

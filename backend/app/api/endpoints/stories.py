@@ -8,6 +8,7 @@ from app.schemas.schemas import CulturalStoryResponse
 
 router = APIRouter()
 
+@router.get("", response_model=List[CulturalStoryResponse])
 @router.get("/", response_model=List[CulturalStoryResponse])
 def get_all_stories(db: Session = Depends(get_db)):
     """Retrieve all curated cultural heritage stories."""
