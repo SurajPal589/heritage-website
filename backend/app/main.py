@@ -4,6 +4,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.core.config import settings, UPLOAD_DIR, BASE_DIR
 from app.database.session import engine, Base, SessionLocal
@@ -55,6 +56,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# GZip compression for high-performance mobile transfer
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Mount Uploads directory for static image serving
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)

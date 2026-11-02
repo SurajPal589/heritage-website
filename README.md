@@ -4,7 +4,7 @@
 **Hackathon Problem Statement:** HC26-CULT01 – Digital Revitalisation of Unstructured Cultural & Architectural Heritage Archives  
 **Event:** Blithchron '27, IIT Gandhinagar  
 **MVP Version:** 1.1.0 (Audited, Optimized & Production Deployed)  
-**Live Public Deployment:** [https://students-disc-watson-updated.trycloudflare.com](https://students-disc-watson-updated.trycloudflare.com)  
+**Live Public Deployment:** [https://elephant-lakes-pledge-metadata.trycloudflare.com](https://elephant-lakes-pledge-metadata.trycloudflare.com)  
 **GitHub Repository:** [https://github.com/SurajPal589/heritage-website](https://github.com/SurajPal589/heritage-website)  
 
 ---
@@ -66,7 +66,7 @@ flowchart TD
 
 | Service / Interface | URL | Description |
 | :--- | :--- | :--- |
-| **Live Web Application** | `https://students-disc-watson-updated.trycloudflare.com` | Accessible on Android phones & Laptops |
+| **Live Web Application** | `https://elephant-lakes-pledge-metadata.trycloudflare.com` | Accessible on Android phones & Laptops |
 | **Local Frontend** | `http://localhost:5173` | React 19 + TypeScript + Vite |
 | **Local Backend API** | `http://localhost:8000` | FastAPI Server |
 | **Swagger API Documentation** | `http://localhost:8000/docs` | Interactive OpenAPI Specification |
