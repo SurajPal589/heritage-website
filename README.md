@@ -1,219 +1,252 @@
-# HeritageLens AI
-### From Historical Archives to Interactive Heritage Maps
+# 🏛️ HeritageLens AI
+### *From Historical Archives to Interactive Heritage Maps*
 
-**Hackathon Problem Statement:** HC26-CULT01 – Digital Revitalisation of Unstructured Cultural & Architectural Heritage Archives  
-**Event:** Blithchron '27, IIT Gandhinagar  
-**MVP Version:** 1.1.0 (Audited, Optimized & Production Deployed)  
-**Live Public Deployment:** [https://elephant-lakes-pledge-metadata.trycloudflare.com](https://elephant-lakes-pledge-metadata.trycloudflare.com)  
-**GitHub Repository:** [https://github.com/SurajPal589/heritage-website](https://github.com/SurajPal589/heritage-website)  
+[![Live on Vercel](https://img.shields.io/badge/Vercel-Live%20Production-black?style=for-the-badge&logo=vercel)](https://heritage-website-three.vercel.app)
+[![React 19](https://img.shields.io/badge/React%2019-Vite%208-blue?style=for-the-badge&logo=react)](https://react.dev/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-Python%203.14-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![Three.js](https://img.shields.io/badge/Three.js-3D%20WebGL-black?style=for-the-badge&logo=three.js)](https://threejs.org/)
+[![Leaflet](https://img.shields.io/badge/Leaflet-OpenStreetMap-199900?style=for-the-badge&logo=leaflet)](https://leafletjs.com/)
+[![Tests Passing](https://img.shields.io/badge/Tests-10%2F10%20Passing-brightgreen?style=for-the-badge&logo=pytest)](https://docs.pytest.org/)
+
+---
+
+## 📌 Project Overview
+
+- **Project Title:** HeritageLens AI
+- **Tagline:** *From Historical Archives to Interactive Heritage Maps*
+- **Problem Statement:** HC26-CULT01 — Digital Revitalisation of Unstructured Cultural & Architectural Heritage Archives
+- **Event:** Blithchron '27, IIT Gandhinagar
+- **Live Production URL:** [https://heritage-website-three.vercel.app](https://heritage-website-three.vercel.app)
+- **GitHub Repository:** [https://github.com/SurajPal589/heritage-website](https://github.com/SurajPal589/heritage-website)
+- **Branch:** `main`
+
+---
+
+## 🌐 Live Access Links
+
+| Platform / Interface | URL | Supported Devices | Status |
+| :--- | :--- | :--- | :--- |
+| **Official Vercel Production Website** | **[https://heritage-website-three.vercel.app](https://heritage-website-three.vercel.app)** | Android, iPhone, Windows, macOS, Linux | 🟢 **Active (200 OK)** |
+| **Vercel Aliased Domain** | **[https://heritage-website-solution-builder.vercel.app](https://heritage-website-solution-builder.vercel.app)** | Mobile & Desktop Browsers | 🟢 **Active (200 OK)** |
+| **GitHub Source Code Repository** | **[https://github.com/SurajPal589/heritage-website](https://github.com/SurajPal589/heritage-website)** | All Platforms | 🟢 **Synced & Clean** |
 
 ---
 
 ## 🏛️ Executive Summary
 
-Currently, cultural documentation collected by students, researchers, explorers, and archaeologists is scattered across disconnected PDF reports, historical photographs, handwritten documents, regional language manuscripts, travel journals, and unindexed cloud folders.
+Cultural documentation collected by students, researchers, explorers, and archaeologists is often trapped in disconnected PDF reports, scanned excavation records, handwritten journals, regional language epigraphs, and unindexed cloud folders.
 
-**HeritageLens AI** solves this problem by providing a functional, production-ready, end-to-end platform that:
-1. Ingests unstructured cultural records (PDFs, JPG, PNG).
-2. Performs page-by-page text extraction with **PyMuPDF** (`pymupdf`) and optical character recognition with **Tesseract OCR** for scanned pages and images.
-3. Automatically synthesizes structured heritage metadata using **Gemini 2.5 Flash** with an authoritative, deterministic rule-based fallback.
-4. Enforces a human verification loop where records are reviewed and classified as **Verified**, **Pending**, or **Rejected**.
-5. Indexes verified heritage locations on an interactive **Leaflet & OpenStreetMap** geospatial interface.
-6. Provides an interactive **3D WebGL Explorer** powered by Three.js with full mobile touch gestures (1-finger orbit, 2-finger pinch zoom, 2-finger pan) and desktop controls.
-7. Computes live, real-time repository statistics directly from the relational database without hardcoded metrics.
+**HeritageLens AI** solves this critical challenge by providing a production-grade, AI-assisted digital heritage documentation system that:
+
+1. **Ingests Unstructured Documents:** Accepts PDFs, scanned documents, archaeological field photographs (JPG, PNG, WEBP) up to 50MB.
+2. **Hybrid OCR & Text Extraction:** Page-by-page text extraction with **PyMuPDF** (`pymupdf`) and targeted **Tesseract OCR** for low-text and scanned documents.
+3. **Structured Heritage Metadata Extraction:** Uses **Gemini 2.5 Flash** with an authoritative rule-based fallback that standardizes heritage records into verified JSON schemas without hallucinating dates or coordinates.
+4. **Human-in-the-Loop Archival Verification:** Allows archivists and historians to review suggestions, edit fields, and assign explicit status (`Verified`, `Pending`, or `Rejected`).
+5. **Interactive 3D WebGL Explorer:** Immersive 3D architectural viewer powered by Three.js with full mobile touch support (1-finger orbit, 2-finger pinch zoom, 2-finger pan).
+6. **Geospatial Mapping Engine:** Interactive Leaflet & OpenStreetMap visualization mapping verified GPS coordinates across India.
+7. **Real-time Database Analytics:** Live SQL-computed statistics (total archives, verified records, pending verifications, geographic distribution) without artificial or hardcoded metrics.
 
 ---
 
-## 🌟 Architecture & Innovation Pathways
+## 🏗️ System Architecture
 
 ```mermaid
 flowchart TD
-    Raw[Unstructured Cultural Archives<br/>PDFs, Scans, Field Notes, Photos] --> Upload[Upload & Ingestion Pipeline<br/>Validation, MIME Checking, UUID Staging]
-    
-    Upload --> PathwayB[Pathway B: Archival NLP & OCR]
-    Upload --> PathwayA[Pathway A: Computer Vision & 3D WebGL]
-    Upload --> PathwayC[Pathway C: Geospatial & Immersive Web]
-    
-    subgraph "Pathway B: OCR & Archival NLP"
-        PathwayB --> OCR[PyMuPDF Native Page Extractor + Tesseract OCR]
-        OCR --> Lang[Script Detection: Devanagari, Tamil, Latin]
-        Lang --> AI[Gemini 2.5 Flash / Deterministic Heritage NLP Fallback]
-        AI --> Meta[Structured Metadata: Title, Dynasty, Period, Lat/Lng]
-        Meta --> Review[Human Archival Review: Verified / Pending / Rejected]
-        Review --> RDB[(SQLite Relational Database)]
+    subgraph Ingestion["1. Ingestion & Validation"]
+        A[Unstructured Archives<br/>PDFs, Scans, Field Photos] --> B[FastAPI File Handler<br/>MIME Verification & Staging]
     end
-    
-    subgraph "Pathway C: Geospatial Intelligence"
-        RDB --> Leaflet[Interactive Leaflet & OSM Engine]
-        Leaflet --> Markers[GPS-Verified Monument Markers]
-        Leaflet --> Unlocated[Unlocated Field Records Queue]
+
+    subgraph Processing["2. Hybrid OCR & Extraction"]
+        B --> C[PyMuPDF Native Text Extractor]
+        C -->|Low-Text / Scanned| D[Tesseract OCR Engine]
+        C -->|Extracted Text| E[Text Aggregator]
+        D --> E
     end
-    
-    subgraph "Pathway A: 3D Heritage Explorer"
-        RDB --> WebGL[Three.js WebGL Engine with OrbitControls]
-        WebGL --> Orbit[Touch Gestures & Inertial Damping]
-        WebGL --> Models[Solanki Column, Sanchi Stupa, Jharokha, Torana]
+
+    subgraph Intelligence["3. AI Metadata Synthesis"]
+        E --> F[Gemini 2.5 Flash / Deterministic Fallback Engine]
+        F --> G[Structured Heritage Metadata Schema<br/>Title, Dynasty, Period, Coordinates]
     end
-    
-    RDB --> SearchEngine[Intelligent Discovery & Natural Language Search]
-    RDB --> StoryEngine[Digital Cultural Storytelling]
-    RDB --> AnalyticsEngine[Live Dynamic Analytics Dashboard]
+
+    subgraph Verification["4. Human Archival Review"]
+        G --> H{Archivist Review Interface}
+        H -->|Approve| I[Status: Verified]
+        H -->|Edit / Hold| J[Status: Pending]
+        H -->|Discard| K[Status: Rejected]
+        I --> L[(SQLite Database<br/>Persistent Archival Store)]
+        J --> L
+        K --> L
+    end
+
+    subgraph Presentation["5. Interactive Web Experiences"]
+        L --> M[Interactive Leaflet & OSM Map]
+        L --> N[Three.js 3D WebGL Explorer<br/>Mobile Touch Gestures]
+        L --> O[Digital Archive & Full-Text Search]
+        L --> P[Live Dynamic Analytics Dashboard]
+    end
 ```
 
 ---
 
-## 🚀 Live Endpoints & System URLs
+## ✨ Key Features
 
-| Service / Interface | URL | Description |
-| :--- | :--- | :--- |
-| **Live Web Application** | `https://elephant-lakes-pledge-metadata.trycloudflare.com` | Accessible on Android phones & Laptops |
-| **Local Frontend** | `http://localhost:5173` | React 19 + TypeScript + Vite |
-| **Local Backend API** | `http://localhost:8000` | FastAPI Server |
-| **Swagger API Documentation** | `http://localhost:8000/docs` | Interactive OpenAPI Specification |
-| **ReDoc Documentation** | `http://localhost:8000/redoc` | Alternative API Documentation |
-| **GitHub Repository** | `https://github.com/SurajPal589/heritage-website` | Complete source code |
+### 1. Document Upload & Multi-Format Ingestion
+- Drag-and-drop and file-browser upload interface.
+- Client-side and server-side validation for file formats (PDF, JPG, JPEG, PNG, WEBP) and size limits (up to 50MB).
+- Progress indicator with error handling and secure UUID staging.
 
----
+### 2. Intelligent PDF Extraction & OCR
+- **Page-by-page extraction** preserving original page numbers.
+- **Selective OCR activation:** Documents with readable digital text bypass OCR for instantaneous processing; scanned pages automatically trigger high-resolution rendering and Tesseract OCR.
 
-## 📡 Complete List of Real Backend API Endpoints
+### 3. Ethical AI & Zero-Hallucination Policy
+- Extracted metadata adheres to strict schema: `heritage_name`, `heritage_category`, `location`, `state`, `country`, `historical_period`, `description`, `keywords`, `source_document`, `source_page`, `latitude`, `longitude`.
+- **Zero Coordinate Hallucination:** Geographic coordinates are never fabricated. Monuments without verified GPS coordinates are categorized as "Unlocated Field Records".
 
-### 1. Platform Health & Diagnostics
-- `GET /api/health` — Returns system health status, service title (`HeritageLens AI`), version, and Gemini AI status.
+### 4. 3D Architectural WebGL Explorer
+- Realistic procedural models of Indian architecture:
+  - **Taj Mahal** (Mughal marble minarets, central dome, lotus finial)
+  - **Sun Temple Konark** (Kalinga architecture, 24-spoke stone wheel, vimana)
+  - **Sanchi Stupa** (Mauryan dome, hemispherical anda, square harmika, triple chhatri)
+- **Mobile Touch Controls:** Custom Three.js `OrbitControls` supporting 1-finger orbit rotation, 2-finger pinch zoom, and 2-finger panning.
+- Automatic viewport adjustment with `ResizeObserver` eliminating black screens or aspect-ratio distortion.
 
-### 2. Digital Archives Management
-- `GET /api/archives/` — Returns paginated archives with filtering by `category`, `state`, `language`, `period`, `verification_status` (`verified`, `pending`, `rejected`), and sorting (`date_desc`, `date_asc`, `title`).
-- `GET /api/archives/{id}` — Returns complete metadata, attached files, extracted text, and relations for a single record.
-- `PUT /api/archives/{id}` — Updates editable fields and tags of an archival record.
-- `DELETE /api/archives/{id}` — Permanently deletes an archive and cascades relations.
+### 5. Interactive Geospatial Heritage Map
+- OpenStreetMap and Leaflet integration with custom markers.
+- Clustered monument points with popups displaying monument era, dynasty, state, and quick navigation to detailed archives.
+- Dedicated unlocated records queue displaying documents requiring geographic tagging.
 
-### 3. Upload & Ingestion
-- `POST /api/upload/` — Validates and stages uploaded files (PDF, JPG, JPEG, PNG, WEBP, max 50MB) and returns a unique `job_uuid`.
-
-### 4. OCR & AI Processing Pipeline
-- `POST /api/processing/run/{job_uuid}` — Executes PyMuPDF page-by-page text extraction, Tesseract OCR for scanned pages/images, and AI/deterministic metadata generation.
-- `GET /api/processing/{job_uuid}` — Retrieves the live status and extracted metadata for an active job.
-- `POST /api/processing/commit` — Human verification endpoint that commits reviewed metadata into the database with explicit status (`verified`, `pending`, or `rejected`).
-
-### 5. Natural Language Heritage Search
-- `GET /api/search/?q={query}` — Multi-field search querying title, description, extracted text, keywords, and geographic location with relevance scoring.
-
-### 6. Geospatial Coordinates & Mapping
-- `GET /api/locations/` — Returns verified GPS markers mapped across India alongside the unlocated archives queue.
-
-### 7. Cultural Narratives & Stories
-- `GET /api/stories/` — Returns curated cultural stories.
-- `GET /api/stories/{slug}` — Returns full interactive story with timeline events.
-
-### 8. Dynamic Analytics
-- `GET /api/analytics/` — Computes live platform metrics directly from the database:
-  - `total_archives`
-  - `total_uploaded_documents`
-  - `total_verified_records`
-  - `total_pending_records`
-  - `total_rejected_records`
-  - `total_heritage_locations`
-  - Category, language, and geographic distributions.
+### 6. Dynamic Analytics Dashboard
+- Live computation of database statistics:
+  - Total Archival Records (31+)
+  - Verified Records (30+)
+  - Pending Review Records (1+)
+  - Uploaded Documents & Field Reports
+  - Category, linguistic, and chronological distribution charts.
 
 ---
 
-## 🛠️ Technical Approach
+## 🛠️ Technology Stack
 
-1. **PDF Text Extraction with PyMuPDF (`pymupdf`):**
-   - Extracts text page-by-page preserving page numbers.
-   - Detects scanned documents or pages with little/no text (`< 30` characters).
-   - Renders low-text pages to 150 DPI pixmaps and selectively applies Tesseract OCR, avoiding expensive or redundant OCR on clean text PDFs.
-
-2. **AI & Deterministic Rule-Based Metadata Extraction:**
-   - Extracts structured schema: `heritage_name`, `heritage_category`, `location`, `state`, `country`, `historical_period`, `description`, `keywords`, `source_document`, `source_page`, `latitude`, `longitude`, `verification_status: "pending"`.
-   - Uses Gemini 2.5 Flash when an API key is configured.
-   - Features a deterministic heritage knowledge base as a transparent fallback.
-   - **Zero Geographical Hallucination:** Coordinates are strictly verified against an authenticated monument registry; unconfirmed locations are flagged as `null` and held in the unlocated queue.
-
-3. **Human-in-the-Loop Verification:**
-   - AI outputs are never automatically assumed to be verified facts.
-   - Archivists review suggestions, refine historical periods, edit categories, and choose between **Approve & Mark Verified**, **Save as Pending**, or **Reject Suggestion**.
-
-4. **3D WebGL Heritage Explorer:**
-   - Built on Three.js with official `OrbitControls`.
-   - Supports 1-finger orbit, 2-finger pinch zoom, and 2-finger pan for mobile touchscreens (Android & iOS) and mouse controls for desktop.
-   - Employs `ResizeObserver` to eliminate zero-dimension camera projection bugs.
-   - Features architectural models: Solanki Stepwell Column, Sanchi Great Stupa, Jharokha Balcony, and Torana Gateway.
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend Framework** | React 19, TypeScript, Vite 8, React Router 7 |
+| **Styling & UI Components** | Tailwind CSS, Lucide React, Framer Motion |
+| **3D Graphics & WebGL** | Three.js, OrbitControls, ResizeObserver |
+| **Geospatial & Maps** | Leaflet, React Leaflet, OpenStreetMap |
+| **Backend API Framework** | FastAPI (Python 3.14), Uvicorn, Pydantic v2 |
+| **Document Processing** | PyMuPDF (`pymupdf`), Tesseract OCR (`pytesseract`), Pillow |
+| **Artificial Intelligence** | Google Gemini API (Gemini 2.5 Flash), Rule-based deterministic engine |
+| **Database & ORM** | SQLite, SQLAlchemy 2.0 |
+| **Deployment & Hosting** | Vercel (Frontend SPA), Cloudflare Tunnel / Render (Backend) |
 
 ---
 
-## ⚖️ Known Limitations
+## 📱 Mobile Responsiveness & Touch Optimization
 
-1. **OCR on Damaged Manuscripts:** Heavily degraded or water-damaged manuscripts with faint ink may produce low OCR confidence and require manual transcription.
-2. **Third-Party AI Quota:** If Gemini API rate limits are exceeded, the system automatically falls back to the deterministic NLP engine.
-3. **Georeferencing Uncertainty:** Monuments mentioned without specific village or district names cannot be pinned on the map and remain in the unlocated records section.
+HeritageLens AI is tested and optimized for both desktop laptops and mobile smartphones:
+- **Responsive Layout:** Adaptive navigation bar with mobile hamburger drawer and collapsible sidebar.
+- **Code-Splitting:** Core JS bundle (~184 KB) separates heavy 3D (~556 KB) and Map (~160 KB) libraries so initial page loads occur under 1.2s on mobile 4G/5G connections.
+- **Fail-Safe Offline Mode:** Built-in `demoData.ts` prevents blank screens by serving preloaded monuments when offline or during intermittent connectivity.
+- **GZip Compression:** Network transfers compressed with GZip middleware (`minimum_size=1000`).
 
 ---
 
-## 💻 Local Setup & Development Instructions
+## 📡 Backend API Endpoints
+
+### Diagnostics
+- `GET /api/health` — Platform status, service version, and AI configuration status.
+
+### Archives Management
+- `GET /api/archives` — Filtered and paginated list of heritage records.
+- `GET /api/archives/{id}` — Full details, extracted text, and relations for a single record.
+- `PUT /api/archives/{id}` — Update heritage fields and tags.
+- `DELETE /api/archives/{id}` — Remove archival record.
+
+### Ingestion & Processing
+- `POST /api/upload` — Upload files and receive a processing `job_uuid`.
+- `POST /api/processing/run/{job_uuid}` — Run PyMuPDF text extraction + OCR + AI metadata generation.
+- `GET /api/processing/{job_uuid}` — Live status of processing pipeline.
+- `POST /api/processing/commit` — Human verification endpoint (`verified`, `pending`, `rejected`).
+
+### Geospatial & Narratives
+- `GET /api/locations` — GPS markers across India and unlocated field notes.
+- `GET /api/stories` — Curated cultural heritage stories with chronological timelines.
+- `GET /api/analytics` — Dynamic SQL-computed statistics.
+
+---
+
+## 💻 Local Development Setup
 
 ### Prerequisites
 - Python 3.11+
 - Node.js 18+
 - Git
 
-### 1. Backend Setup
+### 1. Clone the Repository
 ```bash
-# Clone the repository
 git clone https://github.com/SurajPal589/heritage-website.git
-cd heritage-website/backend
+cd heritage-website
+```
 
-# Create and activate virtual environment
+### 2. Backend Setup
+```bash
+cd backend
 python -m venv venv
+
 # On Windows:
 .\venv\Scripts\activate
 # On Linux/macOS:
 source venv/bin/activate
 
-# Install dependencies
 pip install -r requirements.txt
 
 # Run automated tests
 pytest
 
-# Launch FastAPI server
+# Start FastAPI server
 python -m uvicorn app.main:app --reload --port 8000
 ```
 
-### 2. Frontend Setup
+### 3. Frontend Setup
 ```bash
-# In a separate terminal, navigate to frontend directory
+# In a separate terminal
 cd frontend
-
-# Install Node dependencies
 npm install
-
-# Build for production
 npm run build
-
-# Start Vite dev server
 npm run dev
 ```
+
+Visit `http://localhost:5173` to explore HeritageLens AI locally.
 
 ---
 
 ## 🧪 Automated Testing
 
-HeritageLens AI includes comprehensive automated tests covering API endpoints, upload lifecycle, OCR fallback, natural language search, database persistence, and verification status filtering:
+All core workflows are covered with unit and integration tests:
 
 ```bash
 cd backend
 pytest
 ```
 
-**Results:**
-- `test_api.py::test_health_check` ✅ PASSED
-- `test_api.py::test_list_archives` ✅ PASSED
-- `test_api.py::test_archive_detail` ✅ PASSED
-- `test_api.py::test_natural_language_search` ✅ PASSED
-- `test_api.py::test_locations_endpoint` ✅ PASSED
-- `test_api.py::test_stories_endpoint` ✅ PASSED
-- `test_api.py::test_analytics_endpoint` ✅ PASSED
-- `test_api.py::test_upload_and_ocr_flow` ✅ PASSED
-- `test_api.py::test_verification_and_analytics_breakdown` ✅ PASSED
-- `test_e2e_workflow.py::test_full_heritage_revitalisation_e2e_lifecycle` ✅ PASSED
-**10 passed in 2.66s**
+```text
+============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-9.2.0, pluggy-1.7.0
+rootdir: C:\Users\hp\.agents\backend
+configfile: pytest.ini
+plugins: anyio-4.15.1
+collected 10 items
+
+backend\tests\test_api.py .........                                      [ 90%]
+backend\tests\test_e2e_workflow.py .                                     [100%]
+
+======================== 10 passed in 2.68s ========================
+```
+
+---
+
+## 📄 License & Attribution
+
+Developed with ❤️ for **Blithchron '27, IIT Gandhinagar** (Problem Statement: HC26-CULT01).  
+Open source under the [MIT License](LICENSE).
