@@ -24,7 +24,7 @@ class ReverseProxyHandler(http.server.BaseHTTPRequestHandler):
         self.forward()
 
     def forward(self):
-        target_url = f"http://127.0.0.1:5173{self.path}"
+        target_url = f"http://127.0.0.1:8000{self.path}"
         try:
             content_length = int(self.headers.get('Content-Length', 0))
             body = self.rfile.read(content_length) if content_length > 0 else None

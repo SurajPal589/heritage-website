@@ -1,9 +1,11 @@
 import os
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from pathlib import Path
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from app.core.config import settings, UPLOAD_DIR
+from app.core.config import settings, UPLOAD_DIR, BASE_DIR
 from app.database.session import engine, Base, SessionLocal
 from app.services.seed_data import seed_database
 
@@ -75,4 +77,29 @@ def health_check():
         "version": settings.VERSION,
         "gemini_enabled": bool(settings.GEMINI_API_KEY)
     }
+
+# Mount and serve compiled production frontend (React / Vite bundle)
+FRONTEND_DIST = BASE_DIR.parent / "frontend" / "dist"
+if FRONTEND_DIST.exists():
+    assets_dir = FRONTEND_DIST / "assets"
+    if assets_dir.exists():
+        app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="static-assets")
+
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        # Do not catch API or upload endpoints
+        if full_path.startswith("api") or full_path.startswith("uploads"):
+            raise HTTPException(status_code=404, detail="Endpoint not found")
+        
+        # Check if direct static file
+        target_file = FRONTEND_DIST / full_path
+        if full_path and target_file.is_file():
+            return FileResponse(target_file)
+        
+        # Default to index.html for client-side routing
+        index_file = FRONTEND_DIST / "index.html"
+        if index_file.exists():
+            return FileResponse(index_file)
+        raise HTTPException(status_code=404, detail="Frontend index.html not found")
+
 
